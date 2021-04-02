@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Peter Verkinderen" />
+
+
+<title>R Tutorial</title>
+
+<script src="test_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="test_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="test_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="test_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="test_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="test_files/navigation-1.1/tabsets.js"></script>
+<link href="test_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="test_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R Tutorial</h1>
+<h4 class="author">Peter Verkinderen</h4>
+<h4 class="date">2 4 2021</h4>
+
+</div>
+
+
+<script src="https://cdn.datacamp.com/datacamp-light-latest.min.js"></script>
+<div id="load-the-text" class="section level2">
+<h2>Load the text:</h2>
+<p>We can use the <code>scan()</code> function to load a text into R.</p>
+<p><code>scan()</code> takes three arguments that are relevant to us:</p>
+<ul>
+<li><code>file</code> : the path to a local file, or to a URL on the internet</li>
+<li><code>what</code> : tells R how to store the loaded data; in our case, we want it as a string (in R-speak: “character”)</li>
+<li><code>sep</code> : tells R how to split the data into pieces; we will set it to <code>\n</code>, to split the text into lines</li>
+</ul>
+<p>This code will load a text from the OpenITI corpus, assign it to variable <code>t</code>, and print the first 70 lines:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiIjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG5TeXMuc2V0bG9jYWxlKGNhdGVnb3J5ID0gXCJMQ19BTExcIiwgbG9jYWxlID0gXCJDLlVURi04XCIpXG5cbnVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzA0MjVBSC9tYXN0ZXIvZGF0YS8wNDAxSWJuU2FidXJaYXl5YXQvMDQwMUliblNhYnVyWmF5eWF0LlRpYmJBaW1tYS8wNDAxSWJuU2FidXJaYXl5YXQuVGliYkFpbW1hLlNoaWEwMDEyODgtYXJhMVwiXG50IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG50WzE6NTBdIn0=
+</div>
+<div id="exercise" class="section level3">
+<h3>Exercise:</h3>
+<p>In the following script editor (on the left hand side), adapt the script above so that it loads another OpenITI text into a variable called <code>t_lines</code>, and print the first 70 lines of that text:</p>
+<p>NB: to get the URL for an OpenITI text:</p>
+<ol style="list-style-type: decimal">
+<li>go to the OpenITI corpus search app at <a href="https://kitab-corpus-metadata.azurewebsites.net/">kitab-corpus-metadata.azurewebsites.net/</a></li>
+<li>use the filter field to search for your text</li>
+<li>find the best version of your text (the one with “PRI” in the <code>Book Id</code> column), right-click on the book ID in the <code>Book Id</code> column, and choose <code>Copy link address</code> in the pop-up menu.</li>
+</ol>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiIjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG5TeXMuc2V0bG9jYWxlKGNhdGVnb3J5ID0gXCJMQ19BTExcIiwgbG9jYWxlID0gXCJDLlVURi04XCIpXG5cbiMgY3JlYXRlIGEgdmFyaWFibGUgYHVybGAgYW5kIGFzc2lnbiB0aGUgdXJsIG9mIHlvdXIgdGV4dCB0byBpdDpcblxuXG4jIGxvYWQgdGhlIHRleHQgZnJvbSB0aGUgdXJsIGFuZCBhc3NpZ24gaXQgdG8gYSB2YXJpYWJsZSBjYWxsZWQgYHRfbGluZXNgOlxuXG5cbiMgcHJpbnQgdGhlIGZpcnN0IDcwIGxpbmVzIG9mIHRoZSBsb2FkZWQgdGV4dDoiLCJzb2x1dGlvbiI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuIyBjcmVhdGUgYSB2YXJpYWJsZSBgdXJsYCBhbmQgYXNzaWduIHRoZSB1cmwgb2YgeW91ciB0ZXh0IHRvIGl0OlxudXJsIDwtIFwiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL09wZW5JVEkvMDMwMEFIL21hc3Rlci9kYXRhLzAyNzlCYWxhZGh1cmkvMDI3OUJhbGFkaHVyaS5GdXR1aEJ1bGRhbi8wMjc5QmFsYWRodXJpLkZ1dHVoQnVsZGFuLlNoYW1lbGEwMDEyMjIxLWFyYTEuY29tcGxldGVkXCJcblxuIyBsb2FkIHRoZSB0ZXh0IGZyb20gdGhlIHVybCBhbmQgYXNzaWduIGl0IHRvIGEgdmFyaWFibGUgY2FsbGVkIGB0X2xpbmVzYDpcbnRfbGluZXMgPC0gc2Nhbih1cmwsIHdoYXQ9XCJjaGFyYWN0ZXJcIiwgc2VwPVwiXFxuXCIsIGVuY29kaW5nPVwiVVRGLThcIilcblxuIyBwcmludCB0aGUgZmlyc3QgNzAgbGluZXMgb2YgdGhlIGxvYWRlZCB0ZXh0OlxudF9saW5lc1sxOjcwXSIsInNjdCI6IiMgZG9lcyBub3Qgc2VlbSB0byB3b3JrLi4uXG4jdGVzdF9zdHVkZW50X3R5cGVkKFwidF9saW5lcyAqPC1cIiwgbm90X3R5cGVkX21zZyAgPSBcIllvdSBkaWQgbm90IGFzc2lnbiBhIHZhbHVlIHRvIHZhcmlhYmxlIHRfbGluZXNcIilcbiN0ZXN0X3N0dWRlbnRfdHlwZWQoXCJ1cmwgKjwtXCIsIG5vdF90eXBlZF9tc2cgID0gXCJZb3UgZGlkIG5vdCBhc3NpZ24gYSB2YWx1ZSB0byB2YXJpYWJsZSBgdXJsYFwiKVxuI3Rlc3Rfc3R1ZGVudF90eXBlZChcInVybCAqPC0gKltcXFwiXFwnXVwiLCBub3RfdHlwZWRfbXNnICA9IFwiWW91IGRpZCBub3QgdXNlIHF1b3RlcyB3aGVuIGFzc2lnbmluZyB0aGUgbGluayB0byB2YXJpYWJsZSBgdXJsYFwiKVxuI3Rlc3Rfb3V0cHV0X2NvbnRhaW5zKFwiIyMjIyMjT3BlbklUSSNcIiwgaW5jb3JyZWN0X21zZyA9IFwiTWFrZSBzdXJlIHRvIHByaW50IGB0X2xpbmVzYC5cIilcblxuI3N1Y2Nlc3NfbXNnKFwiR3JlYXQhXCIpIn0=
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
