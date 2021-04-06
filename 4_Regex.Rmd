@@ -97,10 +97,10 @@ create a dispersion plot. A dispersion plot looks like a barcode:
 ![Jockers' dispersion plot for the word "whale" in Moby Dick](4_Regex_files/img/Jockers_whale_dispersion_plot.png)
 
 The black lines show each position in the text where the word is used. 
-(every line is the same width; if some lines seem wider, that is because they 
-are composed of adjacent thinner lines).
+(every line is the same width; if some lines appear wider than others, that is 
+because they are actually a lot of lines positioned closely together).
 
-In order to create such a plot, we first have to indentify where our word is
+In order to create such a plot, we first have to identify where our word is
 located in the text. As in chapter two, we will use the tokenized text 
 (stored in the `book_word_v` variable) as the basis for our analysis. 
 

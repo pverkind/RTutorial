@@ -210,8 +210,8 @@ eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJsaWJyYXJ5KFwic3RyaW5nclwiKSAgIyBpbXBvcnRpbmcg
 <img src="4_Regex_files/img/Jockers_whale_dispersion_plot.png" alt="" />
 <p class="caption">Jockers’ dispersion plot for the word “whale” in Moby Dick</p>
 </div>
-<p>The black lines show each position in the text where the word is used. (every line is the same width; if some lines seem wider, that is because they are composed of adjacent thinner lines).</p>
-<p>In order to create such a plot, we first have to indentify where our word is located in the text. As in chapter two, we will use the tokenized text (stored in the <code>book_word_v</code> variable) as the basis for our analysis.</p>
+<p>The black lines show each position in the text where the word is used. (every line is the same width; if some lines appear wider than others, that is because they are actually a lot of lines positioned closely together).</p>
+<p>In order to create such a plot, we first have to identify where our word is located in the text. As in chapter two, we will use the tokenized text (stored in the <code>book_word_v</code> variable) as the basis for our analysis.</p>
 <p>To identify the positions in which our word is used, we will use the <code>str_detect()</code> function. This function takes two arguments: a character vector containing one or more strings, and a regular expression pattern that describes the word(s) you want to match. The function checks for every string in the vector whether it matches the regular expression you provided. It returns a vector that contains TRUE for every string that matched the regular expression, and FALSE for every string that did not match.</p>
 </div>
 <div id="a-preparatory-example" class="section level2">
