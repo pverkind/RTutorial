@@ -9,7 +9,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Peter Verkinderen" />
 
 
 <title>R Tutorial: Token Distribution and Regular Expressions</title>
@@ -164,8 +163,6 @@ pre code {
 
 
 <h1 class="title toc-ignore">R Tutorial: Token Distribution and Regular Expressions</h1>
-<h4 class="author">Peter Verkinderen</h4>
-<h4 class="date">2 4 2021</h4>
 
 </div>
 
@@ -281,66 +278,6 @@ eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUg
 </div>
 <p>The contrast between <em>akhbara</em> and <em>ḥaddatha</em> becomes much clearer here: al-Ṭabarī clearly used the term akhbara very rarely in the citation of his own sources, even though the term is used frequently in other positions in the transmission chains.</p>
 <p>These graphs can be used as starting-off points for deeper analysis of the citation patterns in al-Ṭabarī’s History.</p>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJzdW1fbl9lbGVtZW50cyA8LSBmdW5jdGlvbihteV92ZWN0b3IsIG4pIHtcbiAgbnVtX3YgPC0gYXMubnVtZXJpYyhteV92ZWN0b3IpXG4gIGkgPC0gMFxuICBjaHVua3MgPC0gdmVjdG9yKClcbiAgd2hpbGUgKGkgPCBsZW5ndGgobnVtX3YpKSB7XG4gICAgY2h1bmtfc3VtIDwtIHN1bShudW1fdlsoaSsxKTooaStuKV0pXG4gICAgaSA8LSBpICsgblxuICAgIGNodW5rcyA8LSBjKGNodW5rcywgY2h1bmtfc3VtKVxuICAgIHByaW50KHBhc3RlKGksIGNodW5rX3N1bSkpXG4gIH1cbiAgcmV0dXJuKGNodW5rcylcbn1cblxuXG5cbiNjaHVua3NfMTAwMCA8LSBzdW1fbl9lbGVtZW50cyhha2hiYXJhbmlfZmlyc3RfdiwgMTAwMClcbmNodW5rc18xMDAwIDwtIGNvbFN1bXMobWF0cml4KGFraGJhcmFuaV9maXJzdF92LCBucm93PTUwMCkpXG5wbG90KGNodW5rc18xMDAwLCB0eXBlPVwiaFwiKSJ9
-</div>
-<p>We have seen that the function <code>which()</code> can be used to identify the index position of a string in a vector. If you click the <code>run</code> button under the code section below, you will see an example of the output of this function:</p>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJoYWRkYXRoYW5pX3YgPC0gd2hpY2goYm9va193b3JkX3YgPT0gXCJcdTA2MmRcdTA2MmZcdTA2MmJcdTA2NDZcdTA2NGFcIilcbmhhZGRhdGhhbmlfdiJ9
-</div>
-<p>The <code>which()</code> function returns an integer vector, a sequence of integers (numbers) that represent the index positions of the strings in the <code>book_word_v</code> that match the condition between the parentheses. Using the <code>==</code> operator means that only positions on which the vector <code>book_word_v</code> contains exactly the string “حدثني” will be added to the <code>haddathani_v</code>; if we want to be a bit more flexible (for example, include tokens in which the word is preceded by the enclitic conjunction <em>wa-</em>), we have to use regular expressions.</p>
-<p>Regular expressions make it possible to define in a more precise way what strings we want to match (e.g., match only part of a string in a vector, instead of the entire string). A couple of functions can be used in R for regular expressions. Jockers’ book describes the use of the <code>grep()</code> function, but this function does not work well for strings that contain characters in non-Latin script. We will use a number of functions from the <code>stringr</code> package, which is part of the <code>tidyverse</code>.</p>
-<p>The <code>str_which()</code> function takes two arguments: first, the character vector containing the strings you want to match; and second, the pattern you want to match in that string. The function returns an integer vector containing the index positions of the strings that matched the pattern in the input vector.</p>
-<p>To see how this works, run the following piece of code:</p>
-<p>(from y value 0 to y value 1) for every position in the <code>match_V</code> that contains the value <code>TRUE</code>.</p>
-<p>NB: this kind of plot is called a histogram plot</p>
-<p>The <code>seq()</code> function creates a sequence of numbers. For example, this code creates a sequence of 1 to 10.</p>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJzZXEoZnJvbSA9IDEsIHRvID0gMTApIn0=
-</div>
-<p>Modify the code above to create a sequence of numbers, from the first word of the book to the last, and assign it to the variable <code>book_seq_v</code>:</p>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiIjIENyZWF0ZSBhIHNlcXVlbmNlIG9mIG51bWJlcnMsIGZyb20gdGhlIGZpcnN0IHdvcmQgb2YgXG4jIHRoZSBib29rIHRvIHRoZSBsYXN0LCBhbmQgYXNzaWduIGl0IHRvIHRoZSB2YXJpYWJsZSBgYm9va19zZXFfdmAiLCJzb2x1dGlvbiI6ImJvb2tfc2VxX3YgPC0gc2VxKGZyb20gPSAxLCB0byA9IGxlbmd0aChib29rX3dvcmRfdikpIiwic2N0IjoiIyBkb2VzIG5vdCBzZWVtIHRvIHdvcmsuLi4iLCJoaW50IjoiJmxkcXVvO1VzZSB0aGUgbGVuZ3RoKCkgZnVuY3Rpb24gdG8gZ2V0IHRoZSBudW1iZXIgb2YgdG9rZW5zIGluIDxjb2RlPmJvb2tfd29yZF92JnF1b3Q7PC9jb2RlPiJ9
-</div>
-<p>In order to plot the occurrences of a word in the course of the book (we will use the word <em>ḥaddathanī/ḥaddathanā</em>, “he transmitted to us”, an important term in the context of citation practices in Arabic), we will first identify which of the positions in this sequence represent the word.</p>
-<p>We have seen that the function <code>which()</code> can be used to identify the index position of a string in a vector. If you click the <code>run</code> button under the code section below, you will see an example of the output of this function:</p>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJoYWRkYXRoYW5pX3YgPC0gd2hpY2goYm9va193b3JkX3YgPT0gXCJcdTA2MmRcdTA2MmZcdTA2MmJcdTA2NDZcdTA2NGFcIilcbmhhZGRhdGhhbmlfdiJ9
-</div>
-<p>The <code>which()</code> function returns an integer vector, a sequence of integers (numbers) that represent the index positions of the strings in the <code>book_word_v</code> that match the condition between the parentheses. Using the <code>==</code> operator means that only positions on which the vector <code>book_word_v</code> contains exactly the string “حدثني” will be added to the <code>haddathani_v</code>; if we want to be a bit more flexible (for example, include tokens in which the word is preceded by the enclitic conjunction <em>wa-</em>), we have to use regular expressions.</p>
-<p>Regular expressions make it possible to define in a more precise way what strings we want to match (e.g., match only part of a string in a vector, instead of the entire string). A couple of functions can be used in R for regular expressions. Jockers’ book describes the use of the <code>grep()</code> function, but this function does not work well for strings that contain characters in non-Latin script. We will use a number of functions from the <code>stringr</code> package, which is part of the <code>tidyverse</code>.</p>
-<p>The <code>str_which()</code> function takes two arguments: first, the character vector containing the strings you want to match; and second, the pattern you want to match in that string. The function returns an integer vector containing the index positions of the strings that matched the pattern in the input vector.</p>
-<p>To see how this works, run the following piece of code:</p>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJsaWJyYXJ5KFwic3RyaW5nclwiKVxudGVzdF92IDwtIGMoXCJhYmNcIiwgXCJkZWZcIiwgXCJjYmFkXCIpXG5zdHJfd2hpY2godGVzdF92LCBcImEuXCIpIn0=
-</div>
-<p>The output of the function shows that the first and third string in the <code>test_v</code> vector contain the character “a” followed by another variable.</p>
-<p>Now, use the <code>str_which()</code> function to check which tokens in the <code>book_word_v</code> vector contain either the strings “ḥaddathanā” or “ḥaddathanī”.</p>
-<p>NB: you can use the pattern elements <code>[]</code> (any of the characters between the brackets) or <code>|</code> (either one string or another).</p>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgXCJzdHJpbmdyXCIgJWluJSAoLnBhY2thZ2VzKCkpKSBsaWJyYXJ5KFwic3RyaW5nclwiKVxuXG5pZiAhZXhpc3RzKGJvb2tfd29yZF92KSB7XG4gICMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcbiAgU3lzLnNldGxvY2FsZShjYXRlZ29yeSA9IFwiTENfQUxMXCIsIGxvY2FsZSA9IFwiQy5VVEYtOFwiKVxuICBcbiAgdXJsIDwtIFwiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL09wZW5JVEkvMDMyNUFIL21hc3Rlci9kYXRhLzAzMTBUYWJhcmkvMDMxMFRhYmFyaS5UYXJpa2gvMDMxMFRhYmFyaS5UYXJpa2guU2hhbWVsYTAwMDk3ODNCSzEtYXJhMS5jb21wbGV0ZWRcIlxuICB0ZXh0X3YgPC0gc2Nhbih1cmwsIHdoYXQ9XCJjaGFyYWN0ZXJcIiwgc2VwPVwiXFxuXCIsIGVuY29kaW5nPVwiVVRGLThcIilcbiAgc3BsaXR0ZXJfaW5kZXggPC0gd2hpY2godGV4dF92ID09IFwiI01FVEEjSGVhZGVyI0VuZCNcIilcbiAgbGluZXNfdiA8LSB0ZXh0X3ZbKHNwbGl0dGVyX2luZGV4KzEpOmxlbmd0aCh0ZXh0X3YpXVxuICBib29rX3YgPC0gcGFzdGUobGluZXNfdiwgY29sbGFwc2UgPSBcIlxcblwiKVxuICBib29rX3dvcmRfbCA8LSBzdHJfc3BsaXQoYm9va192LCBcIlxcXFxXK1wiKVxuICBib29rX3dvcmRfdiA8LSB1bmxpc3QoYm9va193b3JkX2wpXG4gIFxufSIsInNhbXBsZSI6IiMgVXNlIHRoZSBgc3RyX3doaWNoKClgIGZ1bmN0aW9uIHRvIGNoZWNrIHdoaWNoIHRva2VucyBpbiB0aGUgYGJvb2tfd29yZF92YCB2ZWN0b3JcbiMgY29udGFpbiBlaXRoZXIgdGhlIHN0cmluZ3MgXCJcdTFlMjVhZGRhdGhhblx1MDEwMVwiIG9yIFwiXHUxZTI1YWRkYXRoYW5cdTAxMmJcIlxuIyBhbmQgYXNzaWduIHRoZSBvdXRwdXQgb2YgdGhlIGZ1bmN0aW9uIHRvIGEgdmFyaWFibGUgbmFtZWQgYGhhZGRhdGhhbmlfdmA6Iiwic29sdXRpb24iOiIjIFVzZSB0aGUgYHN0cl93aGljaCgpYCBmdW5jdGlvbiB0byBjaGVjayB3aGljaCB0b2tlbnMgaW4gdGhlIGBib29rX3dvcmRfdmAgdmVjdG9yXG4jIGNvbnRhaW4gZWl0aGVyIHRoZSBzdHJpbmdzIFwiXHUxZTI1YWRkYXRoYW5cdTAxMDFcIiBvciBcIlx1MWUyNWFkZGF0aGFuXHUwMTJiXCJcbiMgYW5kIGFzc2lnbiB0aGUgb3V0cHV0IG9mIHRoZSBmdW5jdGlvbiB0byBhIHZhcmlhYmxlIG5hbWVkIGBoYWRkYXRoYW5pX3ZgOlxuXG5oYWRkYXRoYW5pX3YgPC0gc3RyX3doaWNoKGJvb2tfd29yZF92LCBcIlx1MDYyZFx1MDYyZlx1MDYyYlx1MDY0NltcdTA2MjdcdTA2NGFcdTA2NDldXCIpIiwic2N0IjoiIyBkb2VzIG5vdCBzZWVtIHRvIHdvcmsuLi4iLCJoaW50IjoiJmxkcXVvO1VzZSB0aGUgbGVuZ3RoKCkgZnVuY3Rpb24gdG8gZ2V0IHRoZSBudW1iZXIgb2YgdG9rZW5zIGluIDxjb2RlPmJvb2tfd29yZF92JnF1b3Q7PC9jb2RlPiJ9
-</div>
-<p>In order to plot the occurrences of a word in the course of the book (we will use the word <em>ḥaddathanī/ḥaddathanā</em>, “he transmitted to us”, an important term in the context of citation practices in Arabic), we will first identify which of the positions in this sequence represent the word.</p>
-<p>We have seen that the function <code>which()</code> can be used to identify the index position of a string in a vector. If you click the <code>run</code> button under the code section below, you will see an example of the output of this function:</p>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJoYWRkYXRoYW5pX3YgPC0gd2hpY2goYm9va193b3JkX3YgPT0gXCJcdTA2MmRcdTA2MmZcdTA2MmJcdTA2NDZcdTA2NGFcIilcbmhhZGRhdGhhbmlfdiJ9
-</div>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiIjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG5TeXMuc2V0bG9jYWxlKGNhdGVnb3J5ID0gXCJMQ19BTExcIiwgbG9jYWxlID0gXCJDLlVURi04XCIpXG5cbnVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbnQgPC0gc2Nhbih1cmwsIHdoYXQ9XCJjaGFyYWN0ZXJcIiwgc2VwPVwiXFxuXCIsIGVuY29kaW5nPVwiVVRGLThcIilcbnRbMTo1MF0ifQ==
-</div>
-<div id="exercise" class="section level3">
-<h3>Exercise:</h3>
-<p>In the following script editor (on the left hand side), adapt the script above so that it loads another OpenITI text into a variable called <code>t_lines</code>, and print the first 70 lines of that text:</p>
-<p>NB: to get the URL for an OpenITI text:</p>
-<ol style="list-style-type: decimal">
-<li>go to the OpenITI corpus search app at <a href="https://kitab-corpus-metadata.azurewebsites.net/">kitab-corpus-metadata.azurewebsites.net/</a></li>
-<li>use the filter field to search for your text</li>
-<li>find the best version of your text (the one with “PRI” in the <code>Book Id</code> column), right-click on the book ID in the <code>Book Id</code> column, and choose <code>Copy link address</code> in the pop-up menu.</li>
-</ol>
-<div data-datacamp-exercise="" data-height="300" data-encoded="true">
-eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiIjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG5TeXMuc2V0bG9jYWxlKGNhdGVnb3J5ID0gXCJMQ19BTExcIiwgbG9jYWxlID0gXCJDLlVURi04XCIpXG5cbiMgY3JlYXRlIGEgdmFyaWFibGUgYHVybGAgYW5kIGFzc2lnbiB0aGUgdXJsIG9mIHlvdXIgdGV4dCB0byBpdDpcblxuXG4jIGxvYWQgdGhlIHRleHQgZnJvbSB0aGUgdXJsIGFuZCBhc3NpZ24gaXQgdG8gYSB2YXJpYWJsZSBjYWxsZWQgYHRfbGluZXNgOlxuXG5cbiMgcHJpbnQgdGhlIGZpcnN0IDcwIGxpbmVzIG9mIHRoZSBsb2FkZWQgdGV4dDoiLCJzb2x1dGlvbiI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuIyBjcmVhdGUgYSB2YXJpYWJsZSBgdXJsYCBhbmQgYXNzaWduIHRoZSB1cmwgb2YgeW91ciB0ZXh0IHRvIGl0OlxudXJsIDwtIFwiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL09wZW5JVEkvMDMwMEFIL21hc3Rlci9kYXRhLzAyNzlCYWxhZGh1cmkvMDI3OUJhbGFkaHVyaS5GdXR1aEJ1bGRhbi8wMjc5QmFsYWRodXJpLkZ1dHVoQnVsZGFuLlNoYW1lbGEwMDEyMjIxLWFyYTEuY29tcGxldGVkXCJcblxuIyBsb2FkIHRoZSB0ZXh0IGZyb20gdGhlIHVybCBhbmQgYXNzaWduIGl0IHRvIGEgdmFyaWFibGUgY2FsbGVkIGB0X2xpbmVzYDpcbnRfbGluZXMgPC0gc2Nhbih1cmwsIHdoYXQ9XCJjaGFyYWN0ZXJcIiwgc2VwPVwiXFxuXCIsIGVuY29kaW5nPVwiVVRGLThcIilcblxuIyBwcmludCB0aGUgZmlyc3QgNzAgbGluZXMgb2YgdGhlIGxvYWRlZCB0ZXh0OlxudF9saW5lc1sxOjcwXSIsInNjdCI6IiMgZG9lcyBub3Qgc2VlbSB0byB3b3JrLi4uXG4jdGVzdF9zdHVkZW50X3R5cGVkKFwidF9saW5lcyAqPC1cIiwgbm90X3R5cGVkX21zZyAgPSBcIllvdSBkaWQgbm90IGFzc2lnbiBhIHZhbHVlIHRvIHZhcmlhYmxlIHRfbGluZXNcIilcbiN0ZXN0X3N0dWRlbnRfdHlwZWQoXCJ1cmwgKjwtXCIsIG5vdF90eXBlZF9tc2cgID0gXCJZb3UgZGlkIG5vdCBhc3NpZ24gYSB2YWx1ZSB0byB2YXJpYWJsZSBgdXJsYFwiKVxuI3Rlc3Rfc3R1ZGVudF90eXBlZChcInVybCAqPC0gKltcXFwiXFwnXVwiLCBub3RfdHlwZWRfbXNnICA9IFwiWW91IGRpZCBub3QgdXNlIHF1b3RlcyB3aGVuIGFzc2lnbmluZyB0aGUgbGluayB0byB2YXJpYWJsZSBgdXJsYFwiKVxuI3Rlc3Rfb3V0cHV0X2NvbnRhaW5zKFwiIyMjIyMjT3BlbklUSSNcIiwgaW5jb3JyZWN0X21zZyA9IFwiTWFrZSBzdXJlIHRvIHByaW50IGB0X2xpbmVzYC5cIilcblxuI3N1Y2Nlc3NfbXNnKFwiR3JlYXQhXCIpIn0=
-</div>
-</div>
 </div>
 
 

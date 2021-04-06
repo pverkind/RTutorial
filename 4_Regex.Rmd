@@ -1,7 +1,5 @@
 ---
 title: "R Tutorial: Token Distribution and Regular Expressions"
-author: "Peter Verkinderen"
-date: "2 4 2021"
 output: 
   html_document:
     self_contained: false
