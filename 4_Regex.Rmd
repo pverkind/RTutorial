@@ -94,7 +94,7 @@ from the first word of the book to the last.
 In order to visualize the distribution of the use of a word in the text, we will
 create a dispersion plot. A dispersion plot looks like a barcode: 
 
-![](img/dispersion_plot.png)
+![Jockers' dispersion plot for the word "whale" in Moby Dick](4_Regex_files/img/Jockers_whale_dispersion_plot.png)
 
 The black lines show each position in the text where the word is used. 
 (every line is the same width; if some lines seem wider, that is because they 

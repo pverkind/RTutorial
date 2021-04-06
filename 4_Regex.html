@@ -206,7 +206,10 @@ eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJsaWJyYXJ5KFwic3RyaW5nclwiKSAgIyBpbXBvcnRpbmcg
 <p>Chapter 2 showed how to calculate and display raw and relative frequencies of words on the level of an entire book. In this chapter, we will look at how words are distributed within one book. In Jockers’ Moby Dick example: “At what points, for example, does Melville really get into writing about whales?”</p>
 <p>Instead of collapsing an entire book into a frequency table, which does not take the sequence of words into account, we will now plot words in a sequence from the first word of the book to the last.</p>
 <p>In order to visualize the distribution of the use of a word in the text, we will create a dispersion plot. A dispersion plot looks like a barcode:</p>
-<p><img src="img/dispersion_plot.png" /></p>
+<div class="figure">
+<img src="4_Regex_files/img/Jockers_whale_dispersion_plot.png" alt="" />
+<p class="caption">Jockers’ dispersion plot for the word “whale” in Moby Dick</p>
+</div>
 <p>The black lines show each position in the text where the word is used. (every line is the same width; if some lines seem wider, that is because they are composed of adjacent thinner lines).</p>
 <p>In order to create such a plot, we first have to indentify where our word is located in the text. As in chapter two, we will use the tokenized text (stored in the <code>book_word_v</code> variable) as the basis for our analysis.</p>
 <p>To identify the positions in which our word is used, we will use the <code>str_detect()</code> function. This function takes two arguments: a character vector containing one or more strings, and a regular expression pattern that describes the word(s) you want to match. The function checks for every string in the vector whether it matches the regular expression you provided. It returns a vector that contains TRUE for every string that matched the regular expression, and FALSE for every string that did not match.</p>
