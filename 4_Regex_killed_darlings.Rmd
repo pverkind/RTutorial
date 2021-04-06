@@ -1,0 +1,307 @@
+
+
+```{r}
+sum_n_elements <- function(my_vector, n) {
+  num_v <- as.numeric(my_vector)
+  i <- 0
+  chunks <- vector()
+  while (i < length(num_v)) {
+    chunk_sum <- sum(num_v[(i+1):(i+n)])
+    i <- i + n
+    chunks <- c(chunks, chunk_sum)
+    print(paste(i, chunk_sum))
+  }
+  return(chunks)
+}
+
+
+
+#chunks_1000 <- sum_n_elements(akhbarani_first_v, 1000)
+chunks_1000 <- colSums(matrix(akhbarani_first_v, nrow=500))
+plot(chunks_1000, type="h")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+We have seen that the function `which()` can be used to identify the index 
+position of a string in a vector. If you click the `run` button under the
+code section below, you will see an example of the output of this function:
+
+```{r}
+haddathani_v <- which(book_word_v == "حدثني")
+haddathani_v
+```
+
+The `which()` function returns an integer vector, a sequence of integers (numbers)
+that represent the index positions of the strings in the `book_word_v` that match
+the condition between the parentheses.
+Using the `==` operator means that only positions on which the vector `book_word_v`
+contains exactly the string "حدثني" will be added to the `haddathani_v`; if we
+want to be a bit more flexible (for example, include tokens in which the word
+is preceded by the enclitic conjunction *wa-*), we have to use regular expressions. 
+
+Regular expressions make it possible to define in a more precise way what strings
+we want to match (e.g., match only part of a string in a vector, instead of the
+entire string). 
+A couple of functions can be used in R for regular expressions. Jockers' book 
+describes the use of the `grep()` function, but this function does not work 
+well for strings that contain characters in non-Latin script. We will use a 
+number of functions from the `stringr` package, which is part of the `tidyverse`.
+
+The `str_which()` function takes two arguments: first, the character vector
+containing the strings you want to match; and second, the pattern you want to 
+match in that string. The function returns an integer vector containing the 
+index positions of the strings that matched the pattern in the input vector. 
+
+To see how this works, run the following piece of code: 
+
+
+
+(from y value 0 to y value 1) 
+for every position in the `match_V` that contains the value `TRUE`.
+
+NB: this kind of plot is called a histogram plot
+
+
+
+
+The `seq()` function creates a sequence of numbers. For example, this code
+creates a sequence of 1 to 10.
+
+```{r}
+seq(from = 1, to = 10)
+```
+
+Modify the code above to create a sequence of numbers, from the first word of 
+the book to the last, and assign it to the variable `book_seq_v`: 
+
+
+```{r ex="seq", type="sample-code"}
+# Create a sequence of numbers, from the first word of 
+# the book to the last, and assign it to the variable `book_seq_v`
+
+
+```
+
+```{r ex="seq", type="solution"}
+book_seq_v <- seq(from = 1, to = length(book_word_v))
+```
+
+```{r ex="seq", type="hint"}
+"Use the length() function to get the number of tokens in `book_word_v"`
+```
+
+```{r ex="seq", type="sct"}
+# does not seem to work...
+
+```
+
+In order to plot the occurrences of a word in the course of the book
+(we will use the word *ḥaddathanī/ḥaddathanā*, "he transmitted to us", 
+an important term in the context of citation practices in Arabic),
+we will first identify which of the positions in this sequence represent the word.
+
+We have seen that the function `which()` can be used to identify the index 
+position of a string in a vector. If you click the `run` button under the
+code section below, you will see an example of the output of this function:
+
+```{r}
+haddathani_v <- which(book_word_v == "حدثني")
+haddathani_v
+```
+
+The `which()` function returns an integer vector, a sequence of integers (numbers)
+that represent the index positions of the strings in the `book_word_v` that match
+the condition between the parentheses.
+Using the `==` operator means that only positions on which the vector `book_word_v`
+contains exactly the string "حدثني" will be added to the `haddathani_v`; if we
+want to be a bit more flexible (for example, include tokens in which the word
+is preceded by the enclitic conjunction *wa-*), we have to use regular expressions. 
+
+Regular expressions make it possible to define in a more precise way what strings
+we want to match (e.g., match only part of a string in a vector, instead of the
+entire string). 
+A couple of functions can be used in R for regular expressions. Jockers' book 
+describes the use of the `grep()` function, but this function does not work 
+well for strings that contain characters in non-Latin script. We will use a 
+number of functions from the `stringr` package, which is part of the `tidyverse`.
+
+The `str_which()` function takes two arguments: first, the character vector
+containing the strings you want to match; and second, the pattern you want to 
+match in that string. The function returns an integer vector containing the 
+index positions of the strings that matched the pattern in the input vector. 
+
+To see how this works, run the following piece of code: 
+
+```{r}
+library("stringr")
+test_v <- c("abc", "def", "cbad")
+str_which(test_v, "a.")
+```
+
+The output of the function shows that the first and third string in the `test_v`
+vector contain the character "a" followed by another variable. 
+
+Now, use the `str_which()` function to check which tokens in the `book_word_v` vector
+contain either the strings "ḥaddathanā" or "ḥaddathanī". 
+
+NB: you can use the pattern elements `[]` (any of the characters between the brackets)
+or `|` (either one string or another). 
+
+
+```{r ex="str_which", type="pre-exercise-code"}
+if(! "stringr" %in% (.packages())) library("stringr")
+
+if !exists(book_word_v) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+  
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+  book_v <- paste(lines_v, collapse = "\n")
+  book_word_l <- str_split(book_v, "\\W+")
+  book_word_v <- unlist(book_word_l)
+  
+}
+
+```
+
+```{r ex="str_which", type="sample-code"}
+# Use the `str_which()` function to check which tokens in the `book_word_v` vector
+# contain either the strings "ḥaddathanā" or "ḥaddathanī"
+# and assign the output of the function to a variable named `haddathani_v`:
+
+
+```
+
+```{r ex="str_which", type="solution"}
+# Use the `str_which()` function to check which tokens in the `book_word_v` vector
+# contain either the strings "ḥaddathanā" or "ḥaddathanī"
+# and assign the output of the function to a variable named `haddathani_v`:
+
+haddathani_v <- str_which(book_word_v, "حدثن[ايى]")
+```
+
+```{r ex="str_which", type="hint"}
+"Use the length() function to get the number of tokens in `book_word_v"`
+```
+
+```{r ex="str_which", type="sct"}
+# does not seem to work...
+
+```
+
+In order to plot the occurrences of a word in the course of the book
+(we will use the word *ḥaddathanī/ḥaddathanā*, "he transmitted to us", 
+an important term in the context of citation practices in Arabic),
+we will first identify which of the positions in this sequence represent the word.
+
+We have seen that the function `which()` can be used to identify the index 
+position of a string in a vector. If you click the `run` button under the
+code section below, you will see an example of the output of this function:
+
+```{r}
+haddathani_v <- which(book_word_v == "حدثني")
+haddathani_v
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+t <- scan(url, what="character", sep="\n", encoding="UTF-8")
+t[1:50]
+```
+
+### Exercise:
+
+In the following script editor (on the left hand side), adapt the script above so that it loads another OpenITI text into a variable called `t_lines`, and print the first 70 lines of that text:
+
+NB: to get the URL for an OpenITI text: 
+
+1. go to the OpenITI corpus search app at [kitab-corpus-metadata.azurewebsites.net/](https://kitab-corpus-metadata.azurewebsites.net/)
+2. use the filter field to search for your text
+3. find the best version of your text (the one with "PRI" in the `Book Id` column), 
+right-click on the book ID in the `Book Id` column, and choose `Copy link address`
+in the pop-up menu.
+
+```{r ex="load_text", type="sample-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+# create a variable `url` and assign the url of your text to it:
+
+
+# load the text from the url and assign it to a variable called `t_lines`:
+
+
+# print the first 70 lines of the loaded text:
+
+
+```
+
+```{r ex="load_text", type="solution"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+# create a variable `url` and assign the url of your text to it:
+url <- "https://raw.githubusercontent.com/OpenITI/0300AH/master/data/0279Baladhuri/0279Baladhuri.FutuhBuldan/0279Baladhuri.FutuhBuldan.Shamela0012221-ara1.completed"
+
+# load the text from the url and assign it to a variable called `t_lines`:
+t_lines <- scan(url, what="character", sep="\n", encoding="UTF-8")
+
+# print the first 70 lines of the loaded text:
+t_lines[1:70]
+
+```
+
+```{r ex="load_text", type="sct"}
+# does not seem to work...
+#test_student_typed("t_lines *<-", not_typed_msg  = "You did not assign a value to variable t_lines")
+#test_student_typed("url *<-", not_typed_msg  = "You did not assign a value to variable `url`")
+#test_student_typed("url *<- *[\"\']", not_typed_msg  = "You did not use quotes when assigning the link to variable `url`")
+#test_output_contains("######OpenITI#", incorrect_msg = "Make sure to print `t_lines`.")
+
+#success_msg("Great!")
+```
+
+
