@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>R Tutorial: Word Frequency (continued)</title>
+
+<script src="3_Word_Frequencies_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="3_Word_Frequencies_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="3_Word_Frequencies_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="3_Word_Frequencies_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="3_Word_Frequencies_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="3_Word_Frequencies_files/navigation-1.1/tabsets.js"></script>
+<link href="3_Word_Frequencies_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="3_Word_Frequencies_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">R Tutorial: Word Frequency (continued)</h1>
+
+</div>
+
+
+<script src="https://cdn.datacamp.com/datacamp-light-latest.min.js"></script>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This tutorial is based on Jockers’ <em>Text Analysis with R For Students of Literature</em>, Chapter 3: “Accessing and Comparing Word Frequency Data”. In this chapter, he introduces a number of important concepts in programming with R:</p>
+<ul>
+<li><strong>indexing</strong>: accessing values in a vector based on their position or name</li>
+<li><strong>recycling</strong>: the reuse of values in operations with vectors of different size</li>
+</ul>
+<p>Jockers uses Melville’s Moby Dick as his main example. Because English behaves differently from Arabic and Persion, we will use al-Ṭabari’s <em>History</em> as our example text.</p>
+</div>
+<div id="setting-up" class="section level2">
+<h2>Setting up</h2>
+<p>We will start the tutorial with some code we created in the previous classes, in which we created a book frequency table of token frequencies for al-Ṭabari’s <em>History</em>.</p>
+<p>Create a new R script file in your Jockers folder, and name it “Chapter3.R”. You can use the interactive sessions on this tutorial page to experiment with the commands, but be sure to write the code in your personal script file as well.</p>
+<p>Please click the “Run” button below the script to load the example text (al-Tabari’s history), tokenize it and to create a table of word frequencies:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJsaWJyYXJ5KFwic3RyaW5nclwiKVxuXG4jIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG5TeXMuc2V0bG9jYWxlKGNhdGVnb3J5ID0gXCJMQ19BTExcIiwgbG9jYWxlID0gXCJDLlVURi04XCIpXG5cbnVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbnRleHRfdiA8LSBzY2FuKHVybCwgd2hhdD1cImNoYXJhY3RlclwiLCBzZXA9XCJcXG5cIiwgZW5jb2Rpbmc9XCJVVEYtOFwiKVxuc3BsaXR0ZXJfaW5kZXggPC0gd2hpY2godGV4dF92ID09IFwiI01FVEEjSGVhZGVyI0VuZCNcIilcbmxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbmJvb2tfdiA8LSBwYXN0ZShsaW5lc192LCBjb2xsYXBzZSA9IFwiXFxuXCIpXG5ib29rX3dvcmRfbCA8LSBzdHJfc3BsaXQoYm9va192LCBcIlxcXFxXK1wiKVxuYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuYm9va19mcmVxc190IDwtIHRhYmxlKGJvb2tfd29yZF92KVxuc29ydGVkX2Jvb2tfZnJlcXNfdCA8LSBzb3J0KGJvb2tfZnJlcXNfdCwgZGVjcmVhc2luZyA9IFRSVUUpIn0=
+</div>
+<p>You can copy this code into your <code>Chapter3.R</code> script file.</p>
+</div>
+<div id="accessing-token-frequency-data" class="section level2">
+<h2>Accessing token frequency data</h2>
+<p>(Jockers p. 32-33)</p>
+<p>We can access the tokens and their frequencies in the sorted frequency table <code>sorted_book_freqs_t</code> in two ways:</p>
+<ul>
+<li><p>by their position (“index”) in the table; this is called “numerical indexing”:</p>
+<pre><code>&gt; sorted_book_freqs_t[1]  # access the first (that is, most frequent) element in the table
+ بن 
+44050 </code></pre></li>
+<li><p>by the tokens themselves; this is called “named indexing”:</p>
+<pre><code>&gt; sorted_book_freqs_t[&quot;بن&quot;]
+ بن 
+44050 </code></pre></li>
+</ul>
+<p>Note that these two types of indexing are not available for all data types; for “atomic” vectors (collections of data that contain only one data type, like the <code>lines_v</code>, <code>book_v</code> and <code>book_word_v</code> variables in this chapter), only numeric indexing is available:</p>
+<pre><code>&gt; lines_v[58]
+[1] &quot;# نعوذ بالله من عمل يقرب من سخطه، ونسأله التوفيق لما يدني من رضاه&quot;
+&gt; lines_v[&quot;# نعوذ بالله من عمل يقرب من سخطه، ونسأله التوفيق لما يدني من رضاه&quot;]
+[1] NA</code></pre>
+<p>The output of our attempt to use named indexing on the <code>lines_v</code> vector is <code>NA</code> (short for “Not Available”), an indicator for missing values.</p>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
+<div id="print-the-5th-most-common-token-in-al-ṭabaris-history-and-its-frequency." class="section level4">
+<h4>1. Print the 5th most common token in al-Ṭabari’s History and its frequency.</h4>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6IiMgUHJpbnQgNXRoIG1vc3QgY29tbW9uIHRva2VuOiAiLCJoaW50IjoiJmxkcXVvO1VzZSBudW1lcmljYWwgaW5kZXhpbmcgd2l0aCB0aGUgPGNvZGU+c29ydGVkX2Jvb2tfZnJlcXNfdDwvY29kZT4gdGFibGUmcmRxdW87In0=
+</div>
+</div>
+<div id="print-the-ten-most-common-tokens-in-al-ṭabaris-history" class="section level4">
+<h4>2. Print the ten most common tokens in al-Ṭabari’s History</h4>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6IiMgUHJpbnQgdGhlIDEwIG1vc3QgY29tbW9uIHRva2VucyBhbmQgdGhlaXIgZnJlcXVlbmNpZXM6ICIsImhpbnQiOiImbGRxdW87dXNlIHRoZSA8Y29kZT46PC9jb2RlPiBvcGVyYXRvciB0byBjcmVhdGUgYSBzZXF1ZW5jZSBvZiBudW1iZXJzLiZyZHF1bzsifQ==
+</div>
+</div>
+<div id="find-the-frequency-of-the-token-الخليفة-in-al-ṭabaris-tarikh" class="section level4">
+<h4>3. Find the frequency of the token “الخليفة” in al-Ṭabari’s Tarikh:</h4>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6IiMgUHJpbnQgdGhlIGZyZXF1ZW5jeSBvZiB0aGUgdG9rZW4gXCJhbC1raGFsaWZhXCI6ICIsImhpbnQiOiImbGRxdW87dXNlIG5hbWVkIGluZGV4aW5nIG9uIHRoZSA8Y29kZT5zb3J0ZWRfYm9va19mcmVxc190PC9jb2RlPiB0YWJsZS4gRG9uJiMzOTt0IGZvcmdldCB0byB1c2UgcXVvdGF0aW9uIG1hcmtzIGJldHdlZW4gdGhlIGJyYWNrZXRzISZyZHF1bzsifQ==
+</div>
+</div>
+</div>
+</div>
+<div id="relative-frequencies" class="section level2">
+<h2>Relative frequencies</h2>
+<p>Often, it is more useful to know how frequent a word is relative to the number of words in a text than its absolute frequency (the number of times it is used in the text). After all, the absolute frequencies of a word are dependent on how many words the text contains: if a word appears three times in a text of 25 words, that is entirely different from a word that appears three times in a million-word text.</p>
+<p>In order to find the relative frequency of a word in a text, we divide the frequency of that word by the number of words in the text.</p>
+<p>In the previous chapter, we have already seen how you can find the number of tokens in our text: we simply take the length (that is, the number of elements) of the <code>book_word_v</code> vector:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJib29rX3dvcmRfdlwiKSkpIHtcbiAgIyBtYWtlIHN1cmUgQXJhYmljIGlzIGRpc3BsYXllZCBjb3JyZWN0bHk6IFxuICBTeXMuc2V0bG9jYWxlKGNhdGVnb3J5ID0gXCJMQ19BTExcIiwgbG9jYWxlID0gXCJDLlVURi04XCIpXG4gIFxuICB1cmwgPC0gXCJodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vT3BlbklUSS8wMzI1QUgvbWFzdGVyL2RhdGEvMDMxMFRhYmFyaS8wMzEwVGFiYXJpLlRhcmlraC8wMzEwVGFiYXJpLlRhcmlraC5TaGFtZWxhMDAwOTc4M0JLMS1hcmExLmNvbXBsZXRlZFwiXG4gIHRleHRfdiA8LSBzY2FuKHVybCwgd2hhdD1cImNoYXJhY3RlclwiLCBzZXA9XCJcXG5cIiwgZW5jb2Rpbmc9XCJVVEYtOFwiKVxuICBzcGxpdHRlcl9pbmRleCA8LSB3aGljaCh0ZXh0X3YgPT0gXCIjTUVUQSNIZWFkZXIjRW5kI1wiKVxuICBsaW5lc192IDwtIHRleHRfdlsoc3BsaXR0ZXJfaW5kZXgrMSk6bGVuZ3RoKHRleHRfdildXG4gIGJvb2tfdiA8LSBwYXN0ZShsaW5lc192LCBjb2xsYXBzZSA9IFwiXFxuXCIpXG4gIGJvb2tfd29yZF9sIDwtIHN0cl9zcGxpdChib29rX3YsIFwiXFxcXFcrXCIpXG4gIGJvb2tfd29yZF92IDwtIHVubGlzdChib29rX3dvcmRfbClcbn0iLCJzYW1wbGUiOiJhbGxfdG9rZW5zIDwtIGxlbmd0aChib29rX3dvcmRfdilcbmFsbF90b2tlbnMifQ==
+</div>
+<p>We can find the number of tokens in our text also by adding up all frequencies in the <code>sorted_book_freqs_t</code> table:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufVxuXG5pZiAoISAoZXhpc3RzKFwiYWxsX3Rva2Vuc1wiKSkpIHtcbiAgYWxsX3Rva2VucyA8LSBsZW5ndGgoYm9va193b3JkX3YpXG59Iiwic2FtcGxlIjoiYWxsX3Rva2VuX2ZyZXFzIDwtIHN1bShzb3J0ZWRfYm9va19mcmVxc190KVxuYWxsX3Rva2VuX2ZyZXFzXG5hbGxfdG9rZW5fZnJlcXMgPT0gYWxsX3Rva2VucyJ9
+</div>
+<p>Now we can calculate the relative frequency of the most common word in our table:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6ImFsbF90b2tlbl9mcmVxcyA8LSBzdW0oc29ydGVkX2Jvb2tfZnJlcXNfdClcbnJlbF9mcmVxIDwtIHNvcnRlZF9ib29rX2ZyZXFzX3RbMV0gLyBhbGxfdG9rZW5fZnJlcXNcbnJlbF9mcmVxIn0=
+</div>
+<p>The output of the code shows that the token “ibn” accounts for almost 3 percent of all tokens in al-Ṭabari’s History; if the word would be evenly distributed over the text, in every chunk of 100 words from the text, you could expect about three times the word “ibn”. The frequency of this word of course has to do with the fact that “ibn” (“son”) is an essential element in the Arabic name system. Would the word also be the most common word in other types of texts than historical texts? You could now go and find out…</p>
+<div id="exercises-1" class="section level3">
+<h3>Exercises:</h3>
+<div id="find-the-relative-frequency-of-the-token-الخليفة-in-al-ṭabaris-tarikh" class="section level4">
+<h4>1. Find the relative frequency of the token “الخليفة” in al-Ṭabari’s Tarikh:</h4>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6IiMgUHJpbnQgdGhlIHJlbGF0aXZlIGZyZXF1ZW5jeSBvZiB0aGUgdG9rZW4gXCJhbC1raGFsaWZhXCI6ICIsImhpbnQiOiImbGRxdW87dXNlIG5hbWVkIGluZGV4aW5nIG9uIHRoZSA8Y29kZT5zb3J0ZWRfYm9va19mcmVxc190PC9jb2RlPiB0YWJsZS4gRG9uJiMzOTt0IGZvcmdldCB0byB1c2UgcXVvdGF0aW9uIG1hcmtzIGJldHdlZW4gdGhlIGJyYWNrZXRzISZyZHF1bzsifQ==
+</div>
+</div>
+</div>
+</div>
+<div id="recycling" class="section level2">
+<h2>Recycling</h2>
+<p>If we want to calculate the percentages of a number of different tokens (for example, the ten most frequent tokens in the text), we do not have to divide the absolute frequency of every token separately by the token count of the entire text:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6ImFsbF90b2tlbl9mcmVxcyA8LSBzdW0oc29ydGVkX2Jvb2tfZnJlcXNfdClcblxubW9zdF9jb21tb24gPC0gc29ydGVkX2Jvb2tfZnJlcXNfdFsxOjEwXVxucHJpbnQoXCIxMCBtb3N0IGNvbW1vbiB0b2tlbnNcIilcbm1vc3RfY29tbW9uXG5jbGFzcyhtb3N0X2NvbW1vbilcblxucmVsX2ZyZXEgPC0gbW9zdF9jb21tb24gLyBhbGxfdG9rZW5fZnJlcXNcbnByaW50KFwicmVsYXRpdmUgZnJlcXVlbmNpZXM6XCIpXG5yZWxfZnJlcSJ9
+</div>
+<p>Let’s break this code down:</p>
+<ol style="list-style-type: decimal">
+<li>First we calculate the number of tokens in the text</li>
+<li>Then, we use numerical indexing with a vector containing the numbers from 1 to 10 to extract the ten most frequent words and their frequencies; and we assign these to a variable named <code>most_common</code>. Calling the <code>class()</code> function on this variable shows that it is a table, just like the <code>sorted_book_freqs_t</code> variable.</li>
+<li>Finally, we divide this variable by the number of tokens in the text.</li>
+</ol>
+<p>R understands that we want to divide every value in the <code>most_common</code> table by the <code>all_token_freqs</code> value.</p>
+<p>What is going on behind the scenes is that <code>all_token_freqs</code> is a numerical vector with one element (you can check this by running the <code>mode()</code> and <code>length()</code> functions on <code>all_token_freqs</code>), while <code>most_common</code> is a table containing 10 elements. R can only apply an operation like division or multiplication with vectors/tables/… that have the same length. In order to carry out the operation anyway, it temporarily extends the shorter vector by <strong>recycling</strong> (repeating) the values of the shorter vector until both vectors have the same length.</p>
+<p>We can illustrate the concept of recycling with a dummy example:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJ2IDwtIGMoMiwyLDIsMiwyLDIpXG5tIDwtIGMoMSwyKVxudiAqIG0ifQ==
+</div>
+<p>When multiplying data collections like vectors and tables, R will try to multiply the first element of the first collection with the first element of the second collection, the second element with the second, etc. It can only do that when both collection have the same length (that is, contain the same number of elements). In our example, vector <code>m</code> has less elements than vector <code>v</code>, so R will start <em>recycling</em> the values of <code>m</code> until it has reached the same length as <code>v</code>: it basically turns the multiplication <code>c(2,2,2,2,2,2) * c(1,2)</code> into <code>c(2,2,2,2,2,2) * c(1,2,1,2,1,2)</code>.</p>
+<p>Going back to our calculation of the relative frequencies of the 10 most frequent tokens in the text, the one and only element of the <code>all_token_freqs</code> vector is recycled there for every value in the <code>most_common</code> table.</p>
+<p>We can use the same concept to convert the relative frequency of multiple tokens into percentages.</p>
+<p>If we want to convert the relative frequency of one token into a percentage, we have to multiply it by 100:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6ImFsbF90b2tlbl9mcmVxcyA8LSBzdW0oc29ydGVkX2Jvb2tfZnJlcXNfdClcbnJlbF9mcmVxIDwtIHNvcnRlZF9ib29rX2ZyZXFzX3RbMV0gLyBhbGxfdG9rZW5fZnJlcXNcbnByaW50KFwicmVsYXRpdmUgZnJlcXVlbmN5OlwiKVxucmVsX2ZyZXFcbnBlcmMgPC0gMTAwICogcmVsX2ZyZXFcbnByaW50KFwicmVsYXRpdmUgZnJlcXVlbmN5IChwZXJjZW50YWdlKTpcIilcbnBlcmMifQ==
+</div>
+<p>Try yourself to write the code that calculates the percentage for the 10 most frequent tokens in the text:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6IiMgY2FsY3VsYXRlIHRoZSByZWxhdGl2ZSBmcmVxdWVuY3kgKGFzIGEgcGVyY2VudGFnZSkgb2YgdGhlIDEwIG1vc3QgZnJlcXVlbnQgdG9rZW5zOiIsInNvbHV0aW9uIjoiIyBjYWxjdWxhdGUgdGhlIHJlbGF0aXZlIGZyZXF1ZW5jeSAoYXMgYSBwZXJjZW50YWdlKSBvZiB0aGUgMTAgbW9zdCBmcmVxdWVudCB0b2tlbnM6XG5hbGxfdG9rZW5fZnJlcXMgPC0gc3VtKHNvcnRlZF9ib29rX2ZyZXFzX3QpXG5yZWxfZnJlcSA8LSBzb3J0ZWRfYm9va19mcmVxc190WzE6MTBdIC8gYWxsX3Rva2VuX2ZyZXFzXG5wcmludChcInJlbGF0aXZlIGZyZXF1ZW5jeTpcIilcbnJlbF9mcmVxXG5wZXJjIDwtIDEwMCAqIHJlbF9mcmVxXG5wcmludChcInJlbGF0aXZlIGZyZXF1ZW5jeSAocGVyY2VudGFnZSk6XCIpXG5wZXJjIn0=
+</div>
+<div id="exercise" class="section level3">
+<h3>Exercise</h3>
+<div id="find-out-what-happens-when-you-multiply-two-vectors-of-different-size-if-the-length-of-the-longest-one-is-not-a-multiple-of-the-length-of-the-shortest-one" class="section level4">
+<h4>1. Find out what happens when you multiply two vectors of different size, if the length of the longest one is not a multiple of the length of the shortest one:</h4>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiIjIGNyZWF0ZSB0d28gbnVtZXJpYyB2ZWN0b3JzLCBvbmUgd2l0aCA1IGVsZW1lbnRzIGFuZCBvbmUgd2l0aCAzIGVsZW1lbnRzXG5hIDwtIFxuYiA8LSBcbiMgdHJ5IG11bHRpcGx5aW5nIHRoZW0uIFdoYXQgaGFwcGVucz8ifQ==
+</div>
+</div>
+<div id="find-out-whether-recycling-takes-places-with-addition-of-vectors-of-different-size-as-well" class="section level4">
+<h4>2. Find out whether recycling takes places with addition of vectors of different size as well:</h4>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiIjIGNyZWF0ZSB0d28gbnVtZXJpYyB2ZWN0b3JzIG9mIGRpZmZlcmVudCBzaXplIFxuYSA8LSBcbmIgPC0gXG4jIHRyeSBhZGRpbmcgdGhlbS4gV2hhdCBoYXBwZW5zPyJ9
+</div>
+</div>
+<div id="which-percentage-of-al-ṭabaris-work-consists-of-the-twenty-most-common-words" class="section level4">
+<h4>3. Which percentage of al-Ṭabari’s work consists of the twenty most common words?</h4>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6ImlmKCEgKFwic3RyaW5nclwiICVpbiUgKC5wYWNrYWdlcygpKSkpIGxpYnJhcnkoXCJzdHJpbmdyXCIpXG5cbmlmICghIChleGlzdHMoXCJzb3J0ZWRfYm9va19mcmVxc190XCIpKSkge1xuICAjIG1ha2Ugc3VyZSBBcmFiaWMgaXMgZGlzcGxheWVkIGNvcnJlY3RseTogXG4gIFN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcbiAgXG4gIHVybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF92IDwtIHNjYW4odXJsLCB3aGF0PVwiY2hhcmFjdGVyXCIsIHNlcD1cIlxcblwiLCBlbmNvZGluZz1cIlVURi04XCIpXG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfdiA9PSBcIiNNRVRBI0hlYWRlciNFbmQjXCIpXG4gIGxpbmVzX3YgPC0gdGV4dF92WyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF92KV1cbiAgYm9va192IDwtIHBhc3RlKGxpbmVzX3YsIGNvbGxhcHNlID0gXCJcXG5cIilcbiAgYm9va193b3JkX2wgPC0gc3RyX3NwbGl0KGJvb2tfdiwgXCJcXFxcVytcIilcbiAgYm9va193b3JkX3YgPC0gdW5saXN0KGJvb2tfd29yZF9sKVxuICBib29rX2ZyZXFzX3QgPC0gdGFibGUoYm9va193b3JkX3YpXG4gIHNvcnRlZF9ib29rX2ZyZXFzX3QgPC0gc29ydChib29rX2ZyZXFzX3QsIGRlY3JlYXNpbmcgPSBUUlVFKVxufSIsInNhbXBsZSI6IiMgUHJpbnQgdGhlIGN1bXVsYXRpdmUgcmVsYXRpdmUgZnJlcXVlbmNpZXMgb2YgdGhlIDIwIG1vc3QgY29tbW9uIHdvcmRzIGluIHRoZSB0ZXh0OiAiLCJoaW50IjoiJmxkcXVvO3VzZSB0aGUgPGNvZGU+c3VtKCk8L2NvZGU+IGZ1bmN0aW9uIHRvIGNhbGN1bGF0ZSB0aGUgc3VtIG9mIHRoZSBmcmVxdWVuY2llcyBvZiB0aGUgMjAgbW9zdCBjb21tb24gd29yZHMmcmRxdW87In0=
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
