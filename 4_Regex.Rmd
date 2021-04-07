@@ -61,7 +61,8 @@ book_word_l <- str_split(book_v, "\\W+")
 book_word_v <- unlist(book_word_l)
 ```
 
-## A word about coding style (Jockers p. 38)
+## A word about coding style
+(Jockers p. 38)
 
 It is good practice to stick to some principles while coding: 
 
@@ -80,7 +81,8 @@ others, and for yourself to remember how you named your variables.
 For an example of a well-developed style guide for writing R code, see 
 [https://style.tidyverse.org/syntax.html](https://style.tidyverse.org/syntax.html).
 
-## Dispersion plots (Jockers p. 38-)
+## Dispersion plots 
+(Jockers p. 38-)
 
 Chapter 2 showed how to calculate and display raw and relative frequencies of words
 on the level of an entire book. In this chapter, we will look at how words
