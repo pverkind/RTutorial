@@ -129,7 +129,12 @@ if (! (exists("sorted_book_freqs_t"))) {
 ```{r ex = "fifth", type="hint" }
 "Use numerical indexing with the `sorted_book_freqs_t` table" 
 ```
-  
+
+```{r ex = "fifth", type="solution" }
+# Print 5th most common token: 
+sorted_book_freqs_t[5]
+```
+ 
   
 #### 2. Print the ten most common tokens in al-Ṭabari's History
   
@@ -160,7 +165,12 @@ if (! (exists("sorted_book_freqs_t"))) {
 ```{r ex = "ten", type="hint" }
 "use the `:` operator to create a sequence of numbers." 
 ```
-  
+
+```{r ex = "ten", type="solution" }
+# Print the 10 most common tokens and their frequencies: 
+sorted_book_freqs_t[1:10]
+```
+
 #### 3. Find the frequency of the token "الخليفة" in al-Ṭabari's Tarikh:
   
 ```{r ex="khalifa_freq", type="pre-exercise-code"}
@@ -404,8 +414,6 @@ We can illustrate the concept of recycling with a dummy example:
 v <- c(2,2,2,2,2,2)
 m <- c(1,2)
 v * m
-
-
 ```
 
 When multiplying data collections like vectors and tables, R will try to 
@@ -525,7 +533,7 @@ b <-
 
 #### 3. Which percentage of al-Ṭabari's work consists of the twenty most common words?
   
-  ```{r ex="cumul_freq", type="pre-exercise-code"}
+```{r ex="cumul_freq", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
 
 if (! (exists("sorted_book_freqs_t"))) {

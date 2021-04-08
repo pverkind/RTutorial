@@ -427,7 +427,7 @@ that contains all index numbers of the items that matched (in this case, only
 one item).
 
 Now we can use indexing with the `splitter_index` number to split the 
-`text_lines` variable into two variables: `header_v` and `text_v`: 
+`text_lines` variable into two variables: `header_v` and `body_v`: 
 
 ```{R ex="splitting2", type="pre-exercise-code"}
 # make sure Arabic is displayed correctly: 
@@ -446,7 +446,7 @@ if (! (exists("splitter_index"))) {
 
 ```{R ex="splitting2", type="sample-code"}
 header_v <- text_lines[1:splitter_index]
-text_v <- text_lines[(splitter_index+1):length(text_lines)]
+body_v <- text_lines[(splitter_index+1):length(text_lines)]
 ```
 
 We can now check in a number of ways whether the text was split correctly
@@ -468,9 +468,9 @@ if (! (exists("splitter_index"))) {
   splitter_index <- which(text_lines == "#META#Header#End#")
 }
 
-if (! (exists("text_v"))) {
+if (! (exists("body_v"))) {
   header_v <- text_lines[1:splitter_index]
-  text_v <- text_lines[(splitter_index+1):length(text_lines)]
+  body_v <- text_lines[(splitter_index+1):length(text_lines)]
 }
 ```
 
@@ -489,14 +489,14 @@ header_v[]
 # print first 5 lines of the header: 
 header_v[1:5]
 # print last 5 lines of the header: 
-header_v[(length(text_v)-4):length(text_v)]
+header_v[(length(body_v)-4):length(body_v)]
 # print first 5 lines of the text body: 
-text_v[1:5]
+body_v[1:5]
 # print last 5 lines of the text body: 
-text_v[(length(text_v)-4):length(text_v)]
+body_v[(length(body_v)-4):length(body_v)]
 ```
 
-* check whether the sum of the lines in `header_v` and `text_v` equals the
+* check whether the sum of the lines in `header_v` and `body_v` equals the
 number of lines in `text_lines`
 
 ```{R ex="splitting4", type="pre-exercise-code"}
@@ -513,9 +513,9 @@ if (! (exists("splitter_index"))) {
   splitter_index <- which(text_lines == "#META#Header#End#")
 }
 
-if (! (exists("text_v"))) {
+if (! (exists("body_v"))) {
   header_v <- text_lines[1:splitter_index]
-  text_v <- text_lines[(splitter_index+1):length(text_lines)]
+  body_v <- text_lines[(splitter_index+1):length(text_lines)]
 }
 ```
 
@@ -534,45 +534,29 @@ if (! (exists("text_v"))) {
 # print the number of lines in the header:
 length(header_v)
 # print the number of lines in the body text: 
-length(text_v)
+length(body_v)
 # print the number of lines in the original text:
 length(text_lines)
 # check whether the sum of the lines in the header and body equals the original number of lines:
-length(header_v) + length(text_v) == length(text_lines)
+length(header_v) + length(body_v) == length(text_lines)
 ```
 
 ```{R ex="splitting4", type="hint"}
 "Use the `length()` function to get the number of items (lines) in each vector"
 ```
 
-## write your code here and run it to try if it worked: 
+
+## Tokenization
+(Jockers pp. 21-)
 
 
 
+Collapse the text into one long string
+(Jockers p. 21)
 
-
-# check whether this was done correctly by printing the length of the original
-# text variable, the length of the header, and the length of the main text variables:
-# the sum of header and main text should be identical to the original loaded text.
-
-## write your code here and run it to try if it worked: 
-
-
-
-
-
-# p. 21: Collapse the text into one long string: -------------------------------
-
-# turn the main text vector that consists of all lines in the text 
-# into one long string using the `paste` fuction, and call the variable `tabari_v`
-# (to match Jockers' `novel_v` variable name):
-
-## write your code here and run it to try if it worked:
-
-
-
-
-# pp. 22-: TOKENIZATION --------------------------------------------------------
+Turn the main text vector that consists of all lines in the text 
+into one long string using the `paste` fuction, and call the variable `tabari_v`
+(to match Jockers' `novel_v` variable name):
 
 
 
