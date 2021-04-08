@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>R Tutorial: Loading Text, Word Frequency</title>
+
+<script src="2_Load_Texts_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="2_Load_Texts_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="2_Load_Texts_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="2_Load_Texts_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="2_Load_Texts_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="2_Load_Texts_files/navigation-1.1/tabsets.js"></script>
+<link href="2_Load_Texts_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="2_Load_Texts_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">R Tutorial: Loading Text, Word Frequency</h1>
+
+</div>
+
+
+<script src="https://cdn.datacamp.com/datacamp-light-latest.min.js"></script>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This tutorial is based on Jockers' <em>Text Analysis with R For Students of Literature</em>, Chapter 2: “First Foray into Text Analysis with R”.</p>
+<p>In this chapter, we will learn how to load and tokenize a text, and explore word frequencies.</p>
+<p>Jockers uses Melville’s Moby Dick as his main example. Because English behaves differently from Arabic and Persian, we will use al-Ṭabari’s <em>History</em> as our example text.</p>
+<p>This tutorial lets you try out your scripts in an interactive environment. Still, it’s a good idea create an R script file you name “Chapter2.R” in your Jockers directory, and to write and run the code you learn in this tutorial in that file.</p>
+</div>
+<div id="loading-the-first-text-file" class="section level2">
+<h2>Loading the first text file</h2>
+<p>Jockers uses the <code>scan()</code> function to load texts into R, but this does not always work well with texts in non-Latin scripts.</p>
+<p>Instead, we are going to use the <code>read_lines()</code> function from the <code>readr</code> package, which is part of the <code>tidyverse</code> collection of packages. This function will load every line in the text file as a separate element in a character vector.</p>
+<blockquote>
+<p>If you are not sure you have already installed the <code>tidyverse</code>: try loading the <code>readr</code> package using this command:</p>
+<pre><code>library(&quot;readr&quot;)</code></pre>
+<p>If R responds with an error message like <code>there is no package called 'readr'</code>, the package is not installed yet, and you will have to install it. We will install all packages in the <code>tidyverse</code> collection (which includes <code>readr</code>) at the same time using this command:</p>
+<pre><code>install.packages(&quot;tidyverse&quot;)</code></pre>
+</blockquote>
+<p>There are a number of ways to load a text file into R:</p>
+<div id="loading-the-text-file-from-a-url" class="section level3">
+<h3>1. Loading the text file from a URL</h3>
+<p>R can load a text directly from a URL on the internet.</p>
+<p>In this example, we are going to use a text from the OpenITI corpus, al-Ṭabari’s History, which is located here: <a href="https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed" class="uri">https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed</a></p>
+<p>Write the following three lines of code to load the text from your local computer:</p>
+<ol style="list-style-type: decimal">
+<li>First, we load the <code>readr</code> package from the library of installed packages:</li>
+</ol>
+<pre><code>library(&quot;readr&quot;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>assign the URL of the text file to a variable:</li>
+</ol>
+<pre><code>text_url &lt;- &quot;https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed&quot;</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Load the text using <code>readr</code>’s <code>read_lines()</code> function and assign it to a variable. As the name of the function suggests, each line of text will be loaded separately. It is a good idea to reflect this fact in the name of the variable (e.g., <code>text_lines</code>), so that it will be easy to remember what exactly this variable contains:</li>
+</ol>
+<pre><code>text_lines &lt;- read_lines(text_url)</code></pre>
+<blockquote>
+<p>NB: it is not absolutely necessary to assign the URL to a variable, and pass that variable to the <code>read_lines()</code> function; you can also directly pass the URL to the <code>read_lines()</code> function:</p>
+<pre><code>text_lines &lt;- read_lines(&quot;https://raw.githubusercontent.com/OpenITI/0325AH/master/data/ 0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed&quot;)</code></pre>
+<p>Since the URL is so long, your code will be less readable if you do it that way, though.</p>
+</blockquote>
+<p>Finally, print the first 50 lines of text to check if the text was loaded correctly:</p>
+<pre><code>text_lines[1:50]</code></pre>
+<p>Try it out here, by pressing the <code>Run</code> button:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIikiLCJzYW1wbGUiOiJsaWJyYXJ5KFwicmVhZHJcIilcblxudGV4dF91cmwgPC0gXCJodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vT3BlbklUSS8wMzI1QUgvbWFzdGVyL2RhdGEvMDMxMFRhYmFyaS8wMzEwVGFiYXJpLlRhcmlraC8wMzEwVGFiYXJpLlRhcmlraC5TaGFtZWxhMDAwOTc4M0JLMS1hcmExLmNvbXBsZXRlZFwiXG5cbnRleHRfbGluZXMgPC0gcmVhZF9saW5lcyh0ZXh0X3VybClcblxudGV4dF9saW5lc1sxOjUwXSJ9
+</div>
+<p>After you have tried it out here, copy the code into your R script in R studio, and run it there. If you don’t get readable output, the reason is usually that you made a mistake while copying the code. The code interpreter is very unforgiving: a lower-case letter is not the same as an upper-case letter, opening and closing quotations must be of the same type, and every bracket or parenthesis you open must be closed, for example; otherwise you will get an error. In my own experience, typos are responsible for 90 percent of the errors in my code.</p>
+</div>
+<div id="loading-the-text-file-from-your-own-computer" class="section level3">
+<h3>2. loading the text file from your own computer:</h3>
+<p>If you want to load a text from a file that is stored on your own computer, rather than on the internet, you can use the same approach, but instead of the URL, we will use the path to the file on your local computer.</p>
+<p>We will use the <code>file.choose()</code> function to open a file dialog pop-up where you can select the file you want to load into R. The function will create the path to your file, which you can then assign to a variable (we will call it ‘file_path’):</p>
+<pre><code>file_path &lt;- file.choose()</code></pre>
+<p>Try this out by writing the following lines of code in your R script in RStudio (the file dialog would not work in this online tutorial!):</p>
+<pre><code>library(&quot;readr&quot;)
+
+file_path &lt;- file.choose()
+
+text_lines &lt;- read_lines(file_path)
+
+text_lines[1:50]</code></pre>
+</div>
+</div>
+<div id="vectors-and-indexing" class="section level2">
+<h2>Vectors and indexing</h2>
+<p>In the previous section, we could have printed the entire <code>text_lines</code> object in our console in order to check whether the text was loaded correctly, but since this is a very long text, this would be very wasteful of resources (even if we are not printing the text on paper but only on our screen). <code>text_lines</code> contains all lines of our text, so instead of printing all lines, we printed only a subset of the variable, representing the first 50 lines of the text.</p>
+<p>We used the command <code>text_lines[1:50]</code> to do this.</p>
+<p>In order to understand what this command does, it is important to know that <code>text_lines</code> is a <em>vector</em>, the most common data type in R. Vectors can contain one or more items (in the case of <code>text_lines</code>, each item is a string of characters that constitute a line in our text), and each item is stored in its own container. Each of these containers gets a number, starting from 1; these numbers are called <strong>index numbers</strong>. Each of these containers inside the vector can be accessed by calling its index number.</p>
+<p>The process of selecting a subset of items from a vector in R is called “indexing”, and it is a very common operation.</p>
+<p>You use the index number(s) of the desired item(s) between square brackets to indicate which elements you want to select from a vector:</p>
+<ul>
+<li><strong>Select only one item</strong>: put a single number between the brackets. For example, the following code will print only the 50th item in the vector.</li>
+</ul>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6InRleHRfbGluZXNbNTBdIn0=
+</div>
+<ul>
+<li><strong>select more than item</strong>: between the brackets, put a numerical vector that contains the index numbers of each desired item. you can use the <code>c()</code> (for “combine”) function to create such a vector. For example, if we want to print lines 50, 100 and 150 of the text:</li>
+</ul>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6InRleHRfbGluZXNbYyg1MCwgMTAwLCAxNTApXSJ9
+</div>
+<ul>
+<li><strong>select a sequence of items</strong>: use two numbers, separated by a colon, to create a vector of sequential numbers; the first number will be the start of the sequence, and the last number the end of the sequence. For example, this code will print lines 100 to 105 of the text:</li>
+</ul>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6InRleHRfbGluZXNbMTAwOjEwNV0ifQ==
+</div>
+<p>NB: This is the same thing as running <code>text_lines[c(100,101,102,103,104,105)]</code></p>
+<div id="exercises" class="section level3">
+<h3>Exercises:</h3>
+<ol style="list-style-type: decimal">
+<li>Print the first line of the text</li>
+</ol>
+<p>NB: many computer languages start indexing at 0 (the first item in a collection of items is item 0); R starts indexing at 1 (the first item in a collection of items is item 1)</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6IiMgcHJpbnQgdGhlIGZpcnN0IGxpbmUgb2YgdGhlIHRleHQ6IFxudGV4dF9saW5lc1tdIiwic29sdXRpb24iOiJ0ZXh0X2xpbmVzWzFdIn0=
+</div>
+<ol start="2" style="list-style-type: decimal">
+<li>print the last line of the text:</li>
+</ol>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6IiMgcHJpbnQgdGhlIGxhc3QgbGluZSBvZiB0aGUgdGV4dDogXG50ZXh0X2xpbmVzW10iLCJzb2x1dGlvbiI6IiMgcHJpbnQgdGhlIGxhc3QgbGluZSBvZiB0aGUgdGV4dDogXG50ZXh0X2xpbmVzW2xlbmd0aCh0ZXh0X2xpbmVzKV0iLCJoaW50IjoiJmxkcXVvO3VzZSB0aGUgPGNvZGU+bGVuZ3RoKCk8L2NvZGU+IGZ1bmN0aW9uIHRvIGZpbmQgb3V0IGhvdyBtYW55IGl0ZW1zIHRoZSA8Y29kZT50ZXh0X2xpbmVzPC9jb2RlPiB2ZWN0b3IgY29udGFpbnMhJnJkcXVvOyJ9
+</div>
+<ol start="3" style="list-style-type: decimal">
+<li>print lines number 15 to 20 of the text:</li>
+</ol>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6IiMgcHJpbnQgbGluZXMgbnVtYmVyIDE1IHRvIDIwIG9mIHRoZSB0ZXh0OiBcbnRleHRfbGluZXNbXSIsInNvbHV0aW9uIjoiIyBwcmludCBsaW5lcyBudW1iZXIgMTUgdG8gMjAgb2YgdGhlIHRleHQ6IFxudGV4dF9saW5lc1sxNToyMF0iLCJoaW50IjoiJmxkcXVvO3VzZSB0aGUgPGNvZGU+OjwvY29kZT4gb3BlcmF0b3IgYmV0d2VlbiB0aGUgYnJhY2tldHMgdG8gY3JlYXRlIGEgc2VxdWVuY2UmcmRxdW87In0=
+</div>
+<ol start="4" style="list-style-type: decimal">
+<li>print the last 5 lines of the text:</li>
+</ol>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6IiMgcHJpbnQgdGhlIGxhc3QgNSBsaW5lcyBvZiB0aGUgdGV4dDpcbnRleHRfbGluZXNbXSIsInNvbHV0aW9uIjoiIyBwcmludCB0aGUgbGFzdCA1IGxpbmVzIG9mIHRoZSB0ZXh0OiBcbmxhc3RfbGluZSA8LSBsZW5ndGgodGV4dF9saW5lcylcbnRleHRfbGluZXNbKGxhc3RfbGluZSAtIDQpOmxhc3RfbGluZV0iLCJoaW50IjoiJmxkcXVvO3VzZSB0aGUgPGNvZGU+bGVuZ3RoKCk8L2NvZGU+IGZ1bmN0aW9uIHRvIGZpbmQgdGhlIGluZGV4IG51bWJlciBvZiB0aGUgbGFzdCBsaW5lLCBhbmQgdXNlIHN1YnRyYWN0aW9uIGZyb20gdGhhdCBpbmRleCBudW1iZXIgdG8gZmluZCB0aGUgaW5kZXggbnVtYmVyIG9mIHRoZSA1IGJ1dCBsYXN0IGxpbmUmcmRxdW87In0=
+</div>
+<ol start="5" style="list-style-type: decimal">
+<li>print the first 5 lines and the last 5 lines of the text:</li>
+</ol>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6IiMgcHJpbnQgdGhlIGZpcnN0IDUgbGluZXMgYW5kIHRoZSBsYXN0IDUgbGluZXMgb2YgdGhlIHRleHQ6XG50ZXh0X2xpbmVzW10iLCJzb2x1dGlvbiI6IiMgcHJpbnQgdGhlIGxhc3QgNSBsaW5lcyBvZiB0aGUgdGV4dDogXG5sYXN0X2xpbmUgPC0gbGVuZ3RoKHRleHRfbGluZXMpXG5cbnRleHRfbGluZXNbYygxOjUsIChsYXN0X2xpbmUgLSA0KTpsYXN0X2xpbmUpXSIsImhpbnQiOiImbGRxdW87Q29tYmluZSB0aGUgY29kZSBmcm9tIGV4ZXJjaXNlcyAzIGFuZCA0ISBZb3UgY2FuIHVzZSA8Y29kZT5jKCk8L2NvZGU+IHRvIGNvbWJpbmUgdHdvIHZlY3RvcnMuJnJkcXVvOyJ9
+</div>
+</div>
+</div>
+<div id="separate-the-content-from-the-metadata" class="section level2">
+<h2>Separate the content from the metadata:</h2>
+<p>(Jockers p. 19-22)</p>
+<p>The example text is a digitized edition of al-Ṭabari’s Tarikh, from the OpenITI corpus, a corpus of texts in Islamicate languages. In addition to the text written by al-Ṭabari himself, the text file also contains some metadata (in a metadata header at the start of the file). When you want to analyse an author’s work, it is of course very important that the metadata added by a 21st-century editor is not taken into account.</p>
+<p>We will therefore split off the metadata header from the body of al-Ṭabari’s text. Helpfully, the metadata header in all OpenITI texts ends with a line that indicates the end of the metadata header, and the start of the text body: “#META#Header#End#”. We will use this splitter to split the header and the body of the text.</p>
+<p>First, we will use the <code>which()</code> function to find the index number of the metadata splitter in the <code>text_lines</code> vector:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufSIsInNhbXBsZSI6InNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfbGluZXMgPT0gXCIjTUVUQSNIZWFkZXIjRW5kI1wiKVxuXG4jIHByaW50IHRoZSBgc3BsaXR0ZXJfaW5kZXhgOlxuc3BsaXR0ZXJfaW5kZXgifQ==
+</div>
+<p>The <code>which()</code> function goes through all items in the entire <code>text_lines</code> vector and checks for each item if it equals “#META#Header#End#”. It returns a vector that contains all index numbers of the items that matched (in this case, only one item).</p>
+<p>Now we can use indexing with the <code>splitter_index</code> number to split the <code>text_lines</code> variable into two variables: <code>header_v</code> and <code>text_v</code>:</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufVxuXG5pZiAoISAoZXhpc3RzKFwic3BsaXR0ZXJfaW5kZXhcIikpKSB7XG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfbGluZXMgPT0gXCIjTUVUQSNIZWFkZXIjRW5kI1wiKVxufSIsInNhbXBsZSI6ImhlYWRlcl92IDwtIHRleHRfbGluZXNbMTpzcGxpdHRlcl9pbmRleF1cbnRleHRfdiA8LSB0ZXh0X2xpbmVzWyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF9saW5lcyldIn0=
+</div>
+<p>We can now check in a number of ways whether the text was split correctly</p>
+<ul>
+<li>print the first and last couple of lines of both new variables. Try it yourself:</li>
+</ul>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufVxuXG5pZiAoISAoZXhpc3RzKFwic3BsaXR0ZXJfaW5kZXhcIikpKSB7XG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfbGluZXMgPT0gXCIjTUVUQSNIZWFkZXIjRW5kI1wiKVxufVxuXG5pZiAoISAoZXhpc3RzKFwidGV4dF92XCIpKSkge1xuICBoZWFkZXJfdiA8LSB0ZXh0X2xpbmVzWzE6c3BsaXR0ZXJfaW5kZXhdXG4gIHRleHRfdiA8LSB0ZXh0X2xpbmVzWyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF9saW5lcyldXG59Iiwic2FtcGxlIjoiIyBwcmludCBmaXJzdCA1IGxpbmVzIG9mIHRoZSBoZWFkZXI6IFxuaGVhZGVyX3ZbXVxuIyBwcmludCBsYXN0IDUgbGluZXMgb2YgdGhlIGhlYWRlcjogXG5cbiMgcHJpbnQgZmlyc3QgNSBsaW5lcyBvZiB0aGUgdGV4dCBib2R5OiBcblxuIyBwcmludCBsYXN0IDUgbGluZXMgb2YgdGhlIHRleHQgYm9keTogIiwic29sdXRpb24iOiIjIHByaW50IGZpcnN0IDUgbGluZXMgb2YgdGhlIGhlYWRlcjogXG5oZWFkZXJfdlsxOjVdXG4jIHByaW50IGxhc3QgNSBsaW5lcyBvZiB0aGUgaGVhZGVyOiBcbmhlYWRlcl92WyhsZW5ndGgodGV4dF92KS00KTpsZW5ndGgodGV4dF92KV1cbiMgcHJpbnQgZmlyc3QgNSBsaW5lcyBvZiB0aGUgdGV4dCBib2R5OiBcbnRleHRfdlsxOjVdXG4jIHByaW50IGxhc3QgNSBsaW5lcyBvZiB0aGUgdGV4dCBib2R5OiBcbnRleHRfdlsobGVuZ3RoKHRleHRfdiktNCk6bGVuZ3RoKHRleHRfdildIn0=
+</div>
+<ul>
+<li>check whether the sum of the lines in <code>header_v</code> and <code>text_v</code> equals the number of lines in <code>text_lines</code></li>
+</ul>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIilcblxuaWYgKCEgKGV4aXN0cyhcInRleHRfbGluZXNcIikpKSB7XG4gIGxpYnJhcnkoXCJyZWFkclwiKVxuICB0ZXh0X3VybCA8LSBcImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9PcGVuSVRJLzAzMjVBSC9tYXN0ZXIvZGF0YS8wMzEwVGFiYXJpLzAzMTBUYWJhcmkuVGFyaWtoLzAzMTBUYWJhcmkuVGFyaWtoLlNoYW1lbGEwMDA5NzgzQksxLWFyYTEuY29tcGxldGVkXCJcbiAgdGV4dF9saW5lcyA8LSByZWFkX2xpbmVzKHRleHRfdXJsKVxufVxuXG5pZiAoISAoZXhpc3RzKFwic3BsaXR0ZXJfaW5kZXhcIikpKSB7XG4gIHNwbGl0dGVyX2luZGV4IDwtIHdoaWNoKHRleHRfbGluZXMgPT0gXCIjTUVUQSNIZWFkZXIjRW5kI1wiKVxufVxuXG5pZiAoISAoZXhpc3RzKFwidGV4dF92XCIpKSkge1xuICBoZWFkZXJfdiA8LSB0ZXh0X2xpbmVzWzE6c3BsaXR0ZXJfaW5kZXhdXG4gIHRleHRfdiA8LSB0ZXh0X2xpbmVzWyhzcGxpdHRlcl9pbmRleCsxKTpsZW5ndGgodGV4dF9saW5lcyldXG59Iiwic2FtcGxlIjoiIyBwcmludCB0aGUgbnVtYmVyIG9mIGxpbmVzIGluIHRoZSBoZWFkZXI6XG5cbiMgcHJpbnQgdGhlIG51bWJlciBvZiBsaW5lcyBpbiB0aGUgYm9keSB0ZXh0OiBcblxuIyBwcmludCB0aGUgbnVtYmVyIG9mIGxpbmVzIGluIHRoZSBvcmlnaW5hbCB0ZXh0OlxuXG4jIGNoZWNrIHdoZXRoZXIgdGhlIHN1bSBvZiB0aGUgbGluZXMgaW4gdGhlIGhlYWRlciBhbmQgYm9keSBlcXVhbHMgdGhlIG9yaWdpbmFsIG51bWJlciBvZiBsaW5lczoiLCJzb2x1dGlvbiI6IiMgcHJpbnQgdGhlIG51bWJlciBvZiBsaW5lcyBpbiB0aGUgaGVhZGVyOlxubGVuZ3RoKGhlYWRlcl92KVxuIyBwcmludCB0aGUgbnVtYmVyIG9mIGxpbmVzIGluIHRoZSBib2R5IHRleHQ6IFxubGVuZ3RoKHRleHRfdilcbiMgcHJpbnQgdGhlIG51bWJlciBvZiBsaW5lcyBpbiB0aGUgb3JpZ2luYWwgdGV4dDpcbmxlbmd0aCh0ZXh0X2xpbmVzKVxuIyBjaGVjayB3aGV0aGVyIHRoZSBzdW0gb2YgdGhlIGxpbmVzIGluIHRoZSBoZWFkZXIgYW5kIGJvZHkgZXF1YWxzIHRoZSBvcmlnaW5hbCBudW1iZXIgb2YgbGluZXM6XG5sZW5ndGgoaGVhZGVyX3YpICsgbGVuZ3RoKHRleHRfdikgPT0gbGVuZ3RoKHRleHRfbGluZXMpIiwiaGludCI6IiZsZHF1bztVc2UgdGhlIDxjb2RlPmxlbmd0aCgpPC9jb2RlPiBmdW5jdGlvbiB0byBnZXQgdGhlIG51bWJlciBvZiBpdGVtcyAobGluZXMpIGluIGVhY2ggdmVjdG9yJnJkcXVvOyJ9
+</div>
+</div>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+<div id="check-whether-this-was-done-correctly-by-printing-the-length-of-the-original" class="section level1">
+<h1>check whether this was done correctly by printing the length of the original</h1>
+</div>
+<div id="text-variable-the-length-of-the-header-and-the-length-of-the-main-text-variables" class="section level1">
+<h1>text variable, the length of the header, and the length of the main text variables:</h1>
+</div>
+<div id="the-sum-of-header-and-main-text-should-be-identical-to-the-original-loaded-text." class="section level1">
+<h1>the sum of header and main text should be identical to the original loaded text.</h1>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-1" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+</div>
+<div id="p.-21-collapse-the-text-into-one-long-string--" class="section level1">
+<h1>p. 21: Collapse the text into one long string: ——————————-</h1>
+</div>
+<div id="turn-the-main-text-vector-that-consists-of-all-lines-in-the-text" class="section level1">
+<h1>turn the main text vector that consists of all lines in the text</h1>
+</div>
+<div id="into-one-long-string-using-the-paste-fuction-and-call-the-variable-tabari_v" class="section level1">
+<h1>into one long string using the <code>paste</code> fuction, and call the variable <code>tabari_v</code></h1>
+</div>
+<div id="to-match-jockers-novel_v-variable-name" class="section level1">
+<h1>(to match Jockers’ <code>novel_v</code> variable name):</h1>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-2" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+</div>
+<div id="pp.-22--tokenization" class="section level1">
+<h1>pp. 22-: TOKENIZATION ——————————————————–</h1>
+</div>
+<div id="jockers-uses-the-strsplit-function-to-divide-the-text-into-tokens." class="section level1">
+<h1>Jockers uses the <code>strsplit()</code> function to divide the text into tokens.</h1>
+</div>
+<div id="try-using-his-method-for-the-arabic-text-and-assign-the-output-of-the" class="section level1">
+<h1>Try using his method for the Arabic text, and assign the output of the</h1>
+</div>
+<div id="strsplit-function-to-a-variable-called-tabari_word_l" class="section level1">
+<h1>strsplit() function to a variable called “tabari_word_l”</h1>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-3" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+</div>
+<div id="check-the-result-by-printing-the-first-50-items-of-the-list" class="section level1">
+<h1>check the result by printing the first 50 items of the list:</h1>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-4" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+<div id="do-you-notice-anything-strange" class="section level2">
+<h2>Do you notice anything strange?</h2>
+</div>
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="why-is-this-because-strsplit-considers-all-characters" class="section level2">
+<h2>Why is this? Because <code>strsplit</code> considers all characters</h2>
+</div>
+<div id="except-a-z-and-a-z-non-word-characters" class="section level2">
+<h2>except a-z and A-Z non-word characters!</h2>
+</div>
+<div id="for-arabic-text-we-will-need-to-use-a-different-function-to-tokenize-the-text" class="section level2">
+<h2>For Arabic text, we will need to use a different function to tokenize the text:</h2>
+</div>
+<div id="the-str_split-function-from-the-tidyverse-stringr-package" class="section level2">
+<h2>the str_split function from the tidyverse stringr package</h2>
+</div>
+<div id="first-install-the-tidyverse-by-using-the-command-install.packagestidyverse" class="section level2">
+<h2>First, install the tidyverse by using the command <code>install.packages("tidyverse")</code></h2>
+</div>
+<div id="in-the-console" class="section level2">
+<h2>in the Console</h2>
+</div>
+<div id="once-the-tidyverse-is-installed-you-can-load-the-stringr-package-in-r" class="section level2">
+<h2>Once the tidyverse is installed, you can load the ‘stringr’ package in R:</h2>
+<p>library(‘stringr’)</p>
+</div>
+<div id="the-str_split-function-takes-two-arguments-first-the-text-variable" class="section level2">
+<h2>the str_split function takes two arguments: first the text variable,</h2>
+</div>
+<div id="and-then-the-pattern-that-must-be-matched.-use-the-pattern-w-upper-case" class="section level2">
+<h2>and then the pattern that must be matched. Use the pattern “\W+” (upper-case!)</h2>
+</div>
+<div id="to-split-on-a-sequence-of" class="section level2">
+<h2>to split on a sequence of</h2>
+<p>tabari_word_l &lt;- str_split(tabari_v, “\W+”) # note the underscore, and the plus sign!</p>
+</div>
+<div id="check-the-result" class="section level2">
+<h2>check the result:</h2>
+</div>
+<div id="what-type-of-object-is-tabari_word_l-use-class-to-determine-this" class="section level2">
+<h2>What type of object is tabari_word_l? Use class() to determine this:</h2>
+</div>
+<div id="how-many-items-are-in-tabari_word_l-use-length-to-determine-this" class="section level2">
+<h2>how many items are in tabari_word_l? use length() to determine this:</h2>
+</div>
+<div id="print-the-first-couple-of-items-in-tabari_word_l-using-the-head-function" class="section level2">
+<h2>print the first couple of items in tabari_word_l using the head() function:</h2>
+</div>
+<div id="as-the-output-of-class-told-you-tabari_word_l-is-a-list." class="section level2">
+<h2>As the output of class() told you, tabari_word_l is a list.</h2>
+</div>
+<div id="in-order-to-conduct-further-analysis-we-have-to-turn-it-into-a-vector." class="section level2">
+<h2>In order to conduct further analysis, we have to turn it into a vector.</h2>
+</div>
+<div id="jockers-uses-the-unlist-function-to-do-this-p.-24" class="section level2">
+<h2>Jockers uses the <code>unlist()</code> function to do this (p. 24):</h2>
+</div>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-5" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+</div>
+<div id="p.-27-29-word-frequency-analysis" class="section level1">
+<h1>p. 27-29: WORD FREQUENCY ANALYSIS ——————————————————</h1>
+</div>
+<div id="calculate-number-of-tokens-in-the-text" class="section level1">
+<h1>calculate number of tokens in the text:</h1>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-6" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+</div>
+<div id="count-number-of-occurrences-of-a-specific-word-in-the-text-e.g.-الخليفة" class="section level1">
+<h1>count number of occurrences of a specific word in the text (e.g., “الخليفة”)</h1>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-7" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+</div>
+<div id="create-a-token-frequency-table-of-all-tokens-in-the-text-p.-28" class="section level1">
+<h1>Create a token frequency table of all tokens in the text (p. 28):</h1>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-8" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+</div>
+<div id="use-the-plot-function-to-display-the-100-most-frequent-words-in-the-text-p.-29" class="section level1">
+<h1>use the plot() function to display the 100 most frequent words in the text (p. 29):</h1>
+<div id="write-your-code-here-and-run-it-to-try-if-it-worked-9" class="section level2">
+<h2>write your code here and run it to try if it worked:</h2>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

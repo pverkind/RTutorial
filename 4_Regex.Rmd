@@ -46,11 +46,13 @@ We will start the tutorial with some code we created in the previous classes.
 Please click the "Run" button below the script to load the example text
 (al-Tabari's history) and tokenize it:
 
-```{r}
-library("stringr")  # importing libraries is always done at the top of a script
-
+```{r ex="setting_up", type="pre-exercise-code"}
 # make sure Arabic is displayed correctly: 
 Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+```
+
+```{r ex="setting_up", type="sample-code"}
+library("stringr")  # importing libraries is always done at the top of a script
 
 url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
 text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
@@ -305,9 +307,6 @@ if (! (exists("book_word_v"))) {
 ```{r ex="akhbarani", type="sample-code"}
 library("stringr")
 
-# make sure Arabic is displayed correctly: 
-Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
-
 # write the pattern here: 
 ptrn_1 <-
 ptrn_2 <-
@@ -327,9 +326,6 @@ plot(
 
 ```{r ex="akhbarani", type="solution"}
 library("stringr")
-
-# make sure Arabic is displayed correctly: 
-Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8").
 
 # write the pattern here: 
 ptrn_1 <-

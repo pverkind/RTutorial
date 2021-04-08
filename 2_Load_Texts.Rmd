@@ -1,0 +1,663 @@
+---
+title: "R Tutorial: Loading Text, Word Frequency"
+output: 
+  html_document:
+      self_contained: false
+      css: "style.css"
+---
+  
+```{r setup, include=FALSE}
+tutorial::go_interactive()
+```
+
+## Introduction
+
+This tutorial is based on Jockers\' *Text Analysis with R For Students of Literature*, 
+Chapter 2: "First Foray into Text Analysis with R". 
+
+In this chapter, we will learn how to load and tokenize a text, and explore
+word frequencies. 
+
+Jockers uses Melville's Moby Dick as his main example. Because English behaves
+differently from Arabic and Persian, we will use al-Ṭabari's *History* as our
+example text. 
+
+This tutorial lets you try out your scripts in an interactive environment. 
+Still, it's a good idea create an R script file you name "Chapter2.R" in your
+Jockers directory, and to write and run the code you learn in this tutorial 
+in that file. 
+
+## Loading the first text file
+
+Jockers uses the `scan()` function to load texts into R, but this does not 
+always work well with texts in non-Latin scripts. 
+
+Instead, we are going to use the `read_lines()` function from the `readr` 
+package, which is part of the `tidyverse` collection of packages. 
+This function will load every line in the text file as a separate element in 
+a character vector. 
+
+  > If you are not sure you have already installed the `tidyverse`: try loading
+    the `readr` package using this command: 
+    ```
+    library("readr")
+    ```
+    If R responds with an error message like `there is no package called 'readr'`,
+    the package is not installed yet, and you will have to install it. We will 
+    install all packages in the `tidyverse` collection (which includes `readr`)
+    at the same time using this command: 
+    ```
+    install.packages("tidyverse")
+    ```
+    
+There are a number of ways to load a text file into R: 
+
+### 1. Loading the text file from a URL
+
+R can load a text directly from a URL on the internet. 
+
+In this example, we are going to use a text from the OpenITI corpus, 
+al-Ṭabari's History, which is located here: 
+https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed
+
+Write the following three lines of code to load the text from your local computer: 
+
+1. First, we load the `readr` package from the library of installed packages: 
+
+```
+library("readr")
+```
+
+2. assign the URL of the text file to a variable: 
+
+```
+text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+```
+
+3. Load the text using `readr`'s `read_lines()` function and assign it to a variable. 
+As the name of the function suggests, each line of text will be loaded separately. 
+It is a good idea to reflect this fact in the name of the variable (e.g., 
+`text_lines`), so that it will be easy to remember what exactly this variable 
+contains:
+
+```
+text_lines <- read_lines(text_url)
+```
+
+> NB: it is not absolutely necessary to assign the URL to a variable, and pass
+  that variable to the `read_lines()` function; you can also
+  directly pass the URL to the `read_lines()` function: 
+  ```
+  text_lines <- read_lines("https://raw.githubusercontent.com/OpenITI/0325AH/master/data/ 0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed")
+  ```
+  Since the URL is so long, your code will be less readable if you do it that way, though.
+
+Finally, print the first 50 lines of text to check if the text was loaded correctly:
+
+```
+text_lines[1:50]
+```
+
+
+Try it out here, by pressing the `Run` button: 
+
+```{R ex="read_lines", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+```
+
+```{R ex="read_lines", type="sample-code"}
+library("readr")
+
+text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+
+text_lines <- read_lines(text_url)
+
+text_lines[1:50]
+```
+
+After you have tried it out here, copy the code into your R script in R studio, 
+and run it there. If you don't get readable output, the reason is usually 
+that you made a mistake while copying the code. The code interpreter is very 
+unforgiving: a lower-case letter is not the same as an upper-case letter, 
+opening and closing quotations must be of the same type, and every bracket or 
+parenthesis you open must be closed, for example; otherwise you will get an error.
+In my own experience, typos are responsible for 90 percent of the errors in my code. 
+
+
+### 2. loading the text file from your own computer:
+
+If you want to load a text from a file that is stored on your own computer, 
+rather than on the internet, you can use the same approach, but instead of the 
+URL, we will use the path to the file on your local computer. 
+
+We will use the `file.choose()` function to open a file dialog pop-up where you can 
+select the file you want to load into R. The function will create the path to
+your file, which you can then assign to a variable (we will call it 'file_path'):
+
+```
+file_path <- file.choose()
+```
+
+Try this out by writing the following lines of code in your R script in RStudio 
+(the file dialog would not work in this online tutorial!):
+
+```
+library("readr")
+
+file_path <- file.choose()
+
+text_lines <- read_lines(file_path)
+
+text_lines[1:50]
+```
+
+## Vectors and indexing 
+In the previous section, we could have printed the entire `text_lines` object in 
+our console in order to check whether the text was loaded correctly, but since 
+this is a very long text, this would be very wasteful of resources 
+(even if we are not printing the text on paper but only on our screen). 
+`text_lines` contains all lines of our text, so instead of printing all lines, we 
+printed only a subset of the variable, representing the first 50 lines of the text.
+
+We used the command `text_lines[1:50]` to do this.
+
+In order to understand what this command does, it is important to know that 
+`text_lines` is a *vector*, the most common data type in R. 
+Vectors can contain one or more items (in the case of `text_lines`, 
+each item is a string of characters that constitute a line in our text), 
+and each item is stored in its own container. Each of these containers 
+gets a number, starting from 1; these numbers are called **index numbers**.
+Each of these containers inside the vector can be accessed by calling its index 
+number. 
+
+The process of selecting a subset of items from a vector in R is called 
+"indexing", and it is a very common operation. 
+
+You use the index number(s) of the desired item(s) between square brackets 
+to indicate which elements you want to select from a vector: 
+
+* **Select only one item**: put a single number between the brackets. For 
+example, the following code will print only the 50th item in the vector.
+
+```{R ex="indexing1", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="indexing1", type="sample-code"}
+
+text_lines[50]
+```
+
+
+* **select more than item**: between the brackets, put a 
+  numerical vector that contains the index numbers of each desired item. 
+  you can use the `c()` (for "combine") function to create such a vector. 
+  For example, if we want to print lines 50, 100 and 150 of the text: 
+  
+```{R ex="indexing2", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="indexing2", type="sample-code"}
+
+text_lines[c(50, 100, 150)]
+```
+
+* **select a sequence of items**: use two numbers, separated by a colon, to 
+  create a vector of sequential numbers; the first number will be the start of 
+  the sequence, and the last number the end of the sequence. 
+  For example, this code will print lines 100 to 105 of the text: 
+  
+```{R ex="indexing3", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="indexing3", type="sample-code"}
+
+text_lines[100:105]
+```
+
+NB: This is the same thing as running `text_lines[c(100,101,102,103,104,105)]`
+
+
+### Exercises:
+
+1. Print the first line of the text
+
+  NB: many computer languages start indexing at 0 (the first item in a collection
+      of items is item 0); R starts indexing at 1 (the first item in a collection
+      of items is item 1)
+      
+```{R ex="indexing_ex1", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="indexing_ex1", type="sample-code"}
+# print the first line of the text: 
+text_lines[]
+```
+
+```{R ex="indexing_ex1", type="solution"}
+text_lines[1]
+```
+      
+2. print the last line of the text:
+  
+```{R ex="indexing_ex2", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="indexing_ex2", type="sample-code"}
+# print the last line of the text: 
+text_lines[]
+```
+
+```{R ex="indexing_ex2", type="hint"}
+"use the `length()` function to find out how many items the `text_lines` vector contains!"
+```
+
+```{R ex="indexing_ex2", type="solution"}
+# print the last line of the text: 
+text_lines[length(text_lines)]
+```
+
+3. print lines number 15 to 20 of the text:
+  
+```{R ex="indexing_ex3", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="indexing_ex3", type="sample-code"}
+# print lines number 15 to 20 of the text: 
+text_lines[]
+```
+
+```{R ex="indexing_ex3", type="hint"}
+"use the `:` operator between the brackets to create a sequence"
+```
+
+```{R ex="indexing_ex3", type="solution"}
+# print lines number 15 to 20 of the text: 
+text_lines[15:20]
+```
+
+4. print the last 5 lines of the text:
+
+```{R ex="indexing_ex4", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="indexing_ex4", type="sample-code"}
+# print the last 5 lines of the text:
+text_lines[]
+```
+
+```{R ex="indexing_ex4", type="hint"}
+"use the `length()` function to find the index number of the last line, and use subtraction from that index number to find the index number of the 5 but last line"
+```
+
+```{R ex="indexing_ex4", type="solution"}
+# print the last 5 lines of the text: 
+last_line <- length(text_lines)
+text_lines[(last_line - 4):last_line]
+```
+
+5. print the first 5 lines and the last 5 lines of the text:
+
+```{R ex="indexing_ex5", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="indexing_ex5", type="sample-code"}
+# print the first 5 lines and the last 5 lines of the text:
+text_lines[]
+```
+
+```{R ex="indexing_ex5", type="hint"}
+"Combine the code from exercises 3 and 4! You can use `c()` to combine two vectors."
+```
+
+```{R ex="indexing_ex5", type="solution"}
+# print the last 5 lines of the text: 
+last_line <- length(text_lines)
+
+text_lines[c(1:5, (last_line - 4):last_line)]
+```
+
+
+
+
+## Separate the content from the metadata: 
+(Jockers p. 19-22)
+
+
+The example text is a digitized edition of al-Ṭabari's Tarikh, from the OpenITI
+corpus, a corpus of texts in Islamicate languages. In addition to the text
+written by al-Ṭabari himself, the text file also contains some metadata
+(in a metadata header at the start of the file). 
+When you want to analyse an author's work, it is of course very important 
+that the metadata added by a 21st-century editor is not taken into account. 
+
+We will therefore split off the metadata header from the body of al-Ṭabari's
+text. Helpfully, the metadata header in all OpenITI texts ends with a line
+that indicates the end of the metadata header, and the start of the text body: "#META#Header#End#". We will use this splitter to split the header and the
+body of the text. 
+
+First, we will use the `which()` function to find the index number of the
+metadata splitter in the `text_lines` vector:
+
+```{R ex="splitting1", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+```
+
+```{R ex="splitting1", type="sample-code"}
+splitter_index <- which(text_lines == "#META#Header#End#")
+
+# print the `splitter_index`:
+splitter_index
+```
+
+The `which()` function goes through all items in the entire `text_lines` vector
+and checks for each item if it equals "#META#Header#End#". It returns a vector
+that contains all index numbers of the items that matched (in this case, only 
+one item).
+
+Now we can use indexing with the `splitter_index` number to split the 
+`text_lines` variable into two variables: `header_v` and `text_v`: 
+
+```{R ex="splitting2", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+
+if (! (exists("splitter_index"))) {
+  splitter_index <- which(text_lines == "#META#Header#End#")
+}
+```
+
+```{R ex="splitting2", type="sample-code"}
+header_v <- text_lines[1:splitter_index]
+text_v <- text_lines[(splitter_index+1):length(text_lines)]
+```
+
+We can now check in a number of ways whether the text was split correctly
+
+* print the first and last couple of lines of both new variables. Try it yourself:
+
+
+```{R ex="splitting3", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+
+if (! (exists("splitter_index"))) {
+  splitter_index <- which(text_lines == "#META#Header#End#")
+}
+
+if (! (exists("text_v"))) {
+  header_v <- text_lines[1:splitter_index]
+  text_v <- text_lines[(splitter_index+1):length(text_lines)]
+}
+```
+
+
+```{R ex="splitting3", type="sample-code"}
+# print first 5 lines of the header: 
+header_v[]
+# print last 5 lines of the header: 
+
+# print first 5 lines of the text body: 
+
+# print last 5 lines of the text body: 
+```
+
+```{R ex="splitting3", type="solution"}
+# print first 5 lines of the header: 
+header_v[1:5]
+# print last 5 lines of the header: 
+header_v[(length(text_v)-4):length(text_v)]
+# print first 5 lines of the text body: 
+text_v[1:5]
+# print last 5 lines of the text body: 
+text_v[(length(text_v)-4):length(text_v)]
+```
+
+* check whether the sum of the lines in `header_v` and `text_v` equals the
+number of lines in `text_lines`
+
+```{R ex="splitting4", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+if (! (exists("text_lines"))) {
+  library("readr")
+  text_url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_lines <- read_lines(text_url)
+}
+
+if (! (exists("splitter_index"))) {
+  splitter_index <- which(text_lines == "#META#Header#End#")
+}
+
+if (! (exists("text_v"))) {
+  header_v <- text_lines[1:splitter_index]
+  text_v <- text_lines[(splitter_index+1):length(text_lines)]
+}
+```
+
+```{R ex="splitting4", type="sample-code"}
+# print the number of lines in the header:
+
+# print the number of lines in the body text: 
+
+# print the number of lines in the original text:
+
+# check whether the sum of the lines in the header and body equals the original number of lines:
+
+```
+
+```{R ex="splitting4", type="solution"}
+# print the number of lines in the header:
+length(header_v)
+# print the number of lines in the body text: 
+length(text_v)
+# print the number of lines in the original text:
+length(text_lines)
+# check whether the sum of the lines in the header and body equals the original number of lines:
+length(header_v) + length(text_v) == length(text_lines)
+```
+
+```{R ex="splitting4", type="hint"}
+"Use the `length()` function to get the number of items (lines) in each vector"
+```
+
+## write your code here and run it to try if it worked: 
+
+
+
+
+
+# check whether this was done correctly by printing the length of the original
+# text variable, the length of the header, and the length of the main text variables:
+# the sum of header and main text should be identical to the original loaded text.
+
+## write your code here and run it to try if it worked: 
+
+
+
+
+
+# p. 21: Collapse the text into one long string: -------------------------------
+
+# turn the main text vector that consists of all lines in the text 
+# into one long string using the `paste` fuction, and call the variable `tabari_v`
+# (to match Jockers' `novel_v` variable name):
+
+## write your code here and run it to try if it worked:
+
+
+
+
+# pp. 22-: TOKENIZATION --------------------------------------------------------
+
+
+
+# Jockers uses the `strsplit()` function to divide the text into tokens. 
+# Try using his method for the Arabic text, and assign the output of the
+# strsplit() function to a variable called "tabari_word_l"
+
+## write your code here and run it to try if it worked: 
+
+
+
+# check the result by printing the first 50 items of the list: 
+
+## write your code here and run it to try if it worked: 
+
+
+
+## Do you notice anything strange? 
+##
+## Why is this? Because `strsplit` considers all characters 
+## except a-z and A-Z non-word characters!
+
+## For Arabic text, we will need to use a different function to tokenize the text: 
+## the str_split function from the tidyverse stringr package
+## First, install the tidyverse by using the command `install.packages("tidyverse")`
+## in the Console
+
+## Once the tidyverse is installed, you can load the 'stringr' package in R: 
+library('stringr')
+
+## the str_split function takes two arguments: first the text variable, 
+## and then the pattern that must be matched. Use the pattern "\\W+" (upper-case!)
+## to split on a sequence of 
+tabari_word_l <- str_split(tabari_v, "\\W+")  # note the underscore, and the plus sign!
+
+## check the result: 
+
+## What type of object is tabari_word_l?  Use class() to determine this: 
+
+
+
+## how many items are in tabari_word_l? use length() to determine this: 
+
+
+
+## print the first couple of items in tabari_word_l using the head() function: 
+
+
+
+## As the output of class() told you, tabari_word_l is a list. 
+## In order to conduct further analysis, we have to turn it into a vector. 
+## Jockers uses the `unlist()` function to do this (p. 24):
+
+## write your code here and run it to try if it worked: 
+
+
+
+
+
+# p. 27-29: WORD FREQUENCY ANALYSIS ------------------------------------------------------
+
+
+# calculate number of tokens in the text: 
+
+## write your code here and run it to try if it worked: 
+
+
+
+# count number of occurrences of a specific word in the text (e.g., "الخليفة")
+
+## write your code here and run it to try if it worked: 
+
+
+
+
+# Create a token frequency table of all tokens  in the text (p. 28):
+
+## write your code here and run it to try if it worked: 
+
+
+
+# use the plot() function to display the 100 most frequent words in the text (p. 29):
+
+## write your code here and run it to try if it worked: 
+
+
+
+

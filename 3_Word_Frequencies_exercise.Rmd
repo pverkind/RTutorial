@@ -2,7 +2,7 @@
 title: "R Tutorial: Word Frequency (continued)"
 output: 
   html_document:
-    self_contained: false
+      self_contained: false
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +11,7 @@ tutorial::go_interactive()
 
 ## Introduction
 
-This tutorial is based on Jockers' *Text Analysis with R For Students of Literature*, 
+This exercise is based on Jockers' *Text Analysis with R For Students of Literature*, 
 Chapter 3: "Accessing and Comparing Word Frequency Data". In this chapter, he
 introduces a number of important concepts in programming with R: 
 
@@ -25,11 +25,10 @@ example text.
 
 ## Setting up
 
-We will start the tutorial with some code we created in the previous classes,
-in which we created a book frequency table of token frequencies for al-Ṭabari's
-*History*. 
+We will start the exercise with some code we created in the previous classes,
+in which we created a book frequency table of token frequencies.
 
-Create a new R script file in your Jockers folder, and name it "Chapter3.R".
+Create a new R script file in your Jockers folder, and name it "Chapter3_ex_<YOURNAME>.R".
 You can use the interactive sessions on this tutorial page to experiment
 with the commands, but be sure to write the code in your personal script file
 as well. 
@@ -57,7 +56,10 @@ book_freqs_t <- table(book_word_v)
 sorted_book_freqs_t <- sort(book_freqs_t, decreasing = TRUE)
 ```
 
-You can copy this code into your `Chapter3.R` script file. 
+You can copy this code into your `Chapter3_ex_<YOURNAME>.R` script file. 
+
+Run the script in RStudio and make sure it executed correctly, by printing
+the first value in the `sorted_book_freqs_t` vector. 
 
 ## Accessing token frequency data
 (Jockers p. 32-33)
@@ -98,14 +100,14 @@ The output of our attempt to use named indexing on the `lines_v` vector is `NA`
 ### Exercises
 
 #### 1. Print the 5th most common token in al-Ṭabari's History and its frequency.
-
+  
 ```{r ex="fifth", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
 
 if (! (exists("sorted_book_freqs_t"))) {
   # make sure Arabic is displayed correctly: 
   Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
-  
+    
   url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
   text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
   splitter_index <- which(text_v == "#META#Header#End#")
@@ -118,20 +120,19 @@ if (! (exists("sorted_book_freqs_t"))) {
 }
 
 ```
-
+  
 ```{r ex = "fifth", type="sample-code" }
 # Print 5th most common token: 
-
+  
 ```
-
+  
 ```{r ex = "fifth", type="hint" }
 "Use numerical indexing with the `sorted_book_freqs_t` table" 
-
 ```
-
-
+  
+  
 #### 2. Print the ten most common tokens in al-Ṭabari's History
-
+  
 ```{r ex="ten", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
 
@@ -149,24 +150,22 @@ if (! (exists("sorted_book_freqs_t"))) {
   book_freqs_t <- table(book_word_v)
   sorted_book_freqs_t <- sort(book_freqs_t, decreasing = TRUE)
 }
-
+  
 ```
-
+  
 ```{r ex = "ten", type="sample-code" }
 # Print the 10 most common tokens and their frequencies: 
-
 ```
-
+  
 ```{r ex = "ten", type="hint" }
 "use the `:` operator to create a sequence of numbers." 
-
 ```
-
+  
 #### 3. Find the frequency of the token "الخليفة" in al-Ṭabari's Tarikh:
-
+  
 ```{r ex="khalifa_freq", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
-
+  
 if (! (exists("sorted_book_freqs_t"))) {
   # make sure Arabic is displayed correctly: 
   Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
@@ -181,37 +180,37 @@ if (! (exists("sorted_book_freqs_t"))) {
   book_freqs_t <- table(book_word_v)
   sorted_book_freqs_t <- sort(book_freqs_t, decreasing = TRUE)
 }
-
+  
 ```
-
+  
 ```{r ex = "khalifa_freq", type="sample-code" }
 # Print the frequency of the token "al-khalifa": 
-
+  
 ```
-
+  
 ```{r ex = "khalifa_freq", type="hint" }
 "use named indexing on the `sorted_book_freqs_t` table. Don't forget to use quotation marks between the brackets!" 
-
+  
 ```
-
-
+  
+  
 ## Relative frequencies
-
+  
 Often, it is more useful to know how frequent a word is relative to the number of
 words in a text than its absolute frequency (the number of times it is used in the
 text). After all, the absolute frequencies of a word are dependent on how many 
 words the text contains: if a word appears three times in a text of 25 words, 
 that is entirely different from a word that appears three times in a million-word
 text. 
-
+  
 In order to find the relative frequency of a word in a text, we divide the 
 frequency of that word by the number of words in the text. 
-
+  
 In the previous chapter, we have already seen how you can find the number of tokens
 in our text: we simply take the length (that is, the number of elements) of the
 `book_word_v` vector: 
-
-
+    
+    
 ```{r ex="all_tokens", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
 
@@ -229,22 +228,22 @@ if (! (exists("book_word_v"))) {
 }
 
 ```
-
+  
 ```{r ex="all_tokens", type="sample-code"}
 all_tokens <- length(book_word_v)
 all_tokens
 ```
-
+  
 We can find the number of tokens in our text also by adding up all frequencies
 in the `sorted_book_freqs_t` table:
-
+    
 ```{r ex="all_token_freqs", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
 
 if (! (exists("sorted_book_freqs_t"))) {
   # make sure Arabic is displayed correctly: 
   Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
-  
+    
   url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
   text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
   splitter_index <- which(text_v == "#META#Header#End#")
@@ -255,23 +254,23 @@ if (! (exists("sorted_book_freqs_t"))) {
   book_freqs_t <- table(book_word_v)
   sorted_book_freqs_t <- sort(book_freqs_t, decreasing = TRUE)
 }
-
+  
 if (! (exists("all_tokens"))) {
   all_tokens <- length(book_word_v)
 }
 ```
-
+  
 ```{r ex="all_token_freqs", type="sample-code"}
 all_token_freqs <- sum(sorted_book_freqs_t)
 all_token_freqs
 all_token_freqs == all_tokens
 ```
-
+  
 Now we can calculate the relative frequency of the most common word in our table:
-
+    
 ```{r ex="rel_freq_1", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
-
+  
 if (! (exists("sorted_book_freqs_t"))) {
   # make sure Arabic is displayed correctly: 
   Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
@@ -286,15 +285,15 @@ if (! (exists("sorted_book_freqs_t"))) {
   book_freqs_t <- table(book_word_v)
   sorted_book_freqs_t <- sort(book_freqs_t, decreasing = TRUE)
 }
-
+  
 ```
-
+  
 ```{r ex="rel_freq_1", type="sample-code"}
 all_token_freqs <- sum(sorted_book_freqs_t)
 rel_freq <- sorted_book_freqs_t[1] / all_token_freqs
 rel_freq
 ```
-
+  
 The output of the code shows that the token "ibn"  accounts for almost 3 percent 
 of all tokens in al-Ṭabari's History; if the word would be evenly distributed
 over the text, in every chunk of 100 words from the text, you could expect
@@ -306,14 +305,14 @@ texts? You could now go and find out...
 ### Exercises: 
 
 #### 1. Find the relative frequency of the token "الخليفة" in al-Ṭabari's Tarikh:
-
+    
 ```{r ex="khalifa_rel_freq", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
-
-if (! (exists("sorted_book_freqs_t"))) {
-  # make sure Arabic is displayed correctly: 
-  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
   
+if (! (exists("sorted_book_freqs_t"))) {
+# make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+    
   url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
   text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
   splitter_index <- which(text_v == "#META#Header#End#")
@@ -324,30 +323,30 @@ if (! (exists("sorted_book_freqs_t"))) {
   book_freqs_t <- table(book_word_v)
   sorted_book_freqs_t <- sort(book_freqs_t, decreasing = TRUE)
 }
-
+  
 ```
-
+  
 ```{r ex = "khalifa_rel_freq", type="sample-code" }
 # Print the relative frequency of the token "al-khalifa": 
-
+  
 ```
-
+  
 ```{r ex = "khalifa_rel_freq", type="hint" }
 "use named indexing on the `sorted_book_freqs_t` table. Don't forget to use quotation marks between the brackets!" 
-
+  
 ```
-
-
+  
+  
 ## Recycling
-
+  
 If we want to calculate the percentages of a number of different tokens
 (for example, the ten most frequent tokens in the text), 
 we do not have to divide the absolute frequency of every token separately by the 
 token count of the entire text: 
-
+  
 ```{r ex="recycling_1", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
-
+  
 if (! (exists("sorted_book_freqs_t"))) {
   # make sure Arabic is displayed correctly: 
   Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
@@ -362,9 +361,9 @@ if (! (exists("sorted_book_freqs_t"))) {
   book_freqs_t <- table(book_word_v)
   sorted_book_freqs_t <- sort(book_freqs_t, decreasing = TRUE)
 }
-
+  
 ```
-
+  
 ```{r ex="recycling_1", type="sample-code"}
 all_token_freqs <- sum(sorted_book_freqs_t)
 
@@ -377,7 +376,7 @@ rel_freq <- most_common / all_token_freqs
 print("relative frequencies:")
 rel_freq
 ```
-
+  
 Let's break this code down: 
 
 1. First we calculate the number of tokens in the text
@@ -525,8 +524,8 @@ b <-
 
 
 #### 3. Which percentage of al-Ṭabari's work consists of the twenty most common words?
-
-```{r ex="cumul_freq", type="pre-exercise-code"}
+  
+  ```{r ex="cumul_freq", type="pre-exercise-code"}
 if(! ("stringr" %in% (.packages()))) library("stringr")
 
 if (! (exists("sorted_book_freqs_t"))) {
