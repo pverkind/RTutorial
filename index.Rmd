@@ -1,0 +1,27 @@
+---
+title: "R Tutorial: Token Distribution and Regular Expressions"
+output: 
+  html_document:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+tutorial::go_interactive()
+```
+
+## R Tutorial
+
+This tutorial for the programming language R is based on Matthew Jockers' 
+*Text Analysis with R For Students of Literature*,
+and adapted for students working with texts in Arabic script. 
+
+## Table of contents: 
+
+[Chapter 2: First Forays](./2_Load_Texts.html)
+
+[Chapter 3: Word Frequencies](./3_Word_Frequencies.html)
+
+[Chapter 4: Regular expressions](./4_Regex.html)
+
+
+
