@@ -63,6 +63,10 @@ book_word_l <- str_split(book_v, "\\W+")
 book_word_v <- unlist(book_word_l)
 ```
 
+We will mostly be using the variable `book_word_v`, which contains the tokenized
+text of Ṭabari's History. 
+
+
 ## A word about coding style
 (Jockers p. 38)
 
@@ -100,16 +104,29 @@ create a dispersion plot. A dispersion plot looks like a barcode:
 
 ![Jockers' dispersion plot for the word "whale" in Moby Dick](4_Regex_files/img/Jockers_whale_dispersion_plot.png)
 
-The black lines show each position in the text where the word is used. 
-(every line is the same width; if some lines appear wider than others, that is 
-because they are actually a lot of lines positioned closely together).
+The (horizontal) X axis represents the position of each word in the book (1 is the first word,
+20.000 is the 20.000th word). In the example above, for each time the word "whale"
+is mentioned in Melville's Moby Dick, a vertical black line is drawn at the 
+position of that word in the text (e.g., if the 200th word of the book is "whale",
+a black line will be drawn at position 200 on the X axis.)
+Note that every line in the plot is the same width; if some lines appear wider 
+than others, that is because they are actually a lot of lines positioned closely 
+together.
 
-In order to create such a plot, we first have to identify where our word is
+In order to create such a plot, we will have to go through a number of steps: 
+
+0. choose a word of which we want to visualize the distribution in the text
+1. tokenize the text (already done in the setup script; stored in the `book_word_v` variable)
+2. identify the positions of the word in the book
+3. plot these positions in a graph. 
+
+We first have to identify where our word is
 located in the text. As in chapter two, we will use the tokenized text 
 (stored in the `book_word_v` variable) as the basis for our analysis. 
 
 To identify the positions in which our word is used, we will use the `str_detect()` 
-function. This function takes two arguments: a character vector containing one 
+function from the `stringr` package. 
+This function takes two arguments: a character vector containing one 
 or more strings, and a regular expression pattern that describes the word(s) 
 you want to match. The function checks for every string in the vector whether
 it matches the regular expression you provided. It returns a vector that contains
@@ -184,12 +201,11 @@ This is an example of an isnād:
 حدثنا عبيد الله بن موسى، قال: أخبرنا موسى بن عبيده عن اياس ابن سلمة بن
 الأكوع، عن أبيه، قال: بعثت قريش
 
-Muḥammad b. ʿUmārab al-Asadī and Muḥammad b. Manṣūr transmitted to me: 
-ʿUbayd Allāh b. Mūsā transmitted to me: Mūsā b. ʿUbayda transmitted to me, 
+Muḥammad b. ʿUmāra al-Asadī and Muḥammad b. Manṣūr transmitted to me (*ḥaddathanī*): 
+ʿUbayd Allāh b. Mūsā transmitted to me (*ḥaddathanī*): Mūsā b. ʿUbayda transmitted to me (*akhbaranī*), 
 on the authority of Iyās ibn Salama b. al-Akwaʿ, on the authority of his father: 
 "Qurays sent etc."
-  
-  
+
 The verb *ḥaddatha* is related to the term *ḥadīth*, which is used for transmitted
 reports on the words and deeds of the Prophet Muḥammad. 
 The implications of the term *ḥaddathanī/ḥaddathanā* are not well understood; 
@@ -359,12 +375,12 @@ If the pattern we are looking for is not limited to one specific word, we cannot
 use a text tokenized into separate words, but have to tokenize it in a different 
 way.
 
-NB: we can also use non-tokenized text, and use the index location of each character
-in the text as ancher points for the visualization. 
+> NB: we can also use non-tokenized text, and use the index location of each character
+  in the text as ancher points for the visualization. 
 
 One way to do this, is by using each line of text as a token.
-During the tokenization process, we have already created a vector that 
-contains every line as a separate string: `lines_v`. 
+During the tokenization process (see the setting up code above), we have already 
+created a vector that contains every line as a separate string: `lines_v`. 
 This line-by-line approach would work well,
 for example, if we want to contrast the distribution of the use of *ḥaddatha* 
 in the book in general, with the distribution of the term as the first element
@@ -406,26 +422,22 @@ ptrn_2 <- ""  # alif, ya or alif maqsura
 ptrn <- paste(ptrn_0, ptrn_1, ptrn_2, sep="")  # concatenate all patterns into a single pattern
 haddathani_first_v <- str_detect(lines_v, ptrn)
 
-# plot the vector (we add some more arguments here to prettify the graph):
+# plot the vector:
 plot(
-  
-  
-  
-  
-  
+
 
 )
 ```
 
 ```{r ex="haddathani_first", type="hint"}
-"You can use the expression "^# .?", for the beginning of the line; or to be more precise, use the letters waw and fa between square brackets instead of the full stop."
+"You can use the expression `^# .?` for the beginning of the line; or to be more precise, use the letters waw and fa between square brackets instead of the full stop. Full solution: can be found at the bottom of this page."
 ```
 
 
 ```{r ex="haddathani_first", type="solution"}
 library("stringr")
 
-# build  the regular expression that can be used to identify the instances where haddathana/i is the first word of a transmission chain: 
+# !!!! YOU STILL HAVE TO WRITE THE PATTERNS HERE !!!! (full solution: at bottom of the page): 
 ptrn_0 <- ""  # start of line, followed by hashtag and space, and optionally one of the conjunctions wa- or fa-
 ptrn_1 <- ""  # haddathan
 ptrn_2 <- ""  # alif, ya or alif maqsura
@@ -443,6 +455,7 @@ plot(haddathani_first_v,
      ylab = "",                                  # label for the y axis
 )
 ```
+
 
 This plot is much more informative than the first plot we made for the term 
 *ḥaddatha*: it shows that al-Ṭabarī's use of the term 
@@ -493,7 +506,7 @@ plot(
 
 ```{r ex="akhbarani_first", type="solution"}
 library("stringr")
-# write the pattern here: 
+# !!!! YOU STILL HAVE TO WRITE THE PATTERNS HERE !!!! (full solution: at bottom of the page): 
 ptrn_1 <- ""  # start of line, followed by hashtag and space, and optionally one of the conjunctions wa- or fa-
 ptrn_2 <- ""  # alif or alif-with-hamza
 ptrn_3 <- ""  # khbaran
@@ -514,6 +527,11 @@ plot(akhbarani_first_v,
 )
 ```
 
+```{r ex="akhbarani_first", type="hint"}
+"You can use the expression `^# .?` for the beginning of the line; or to be more precise, use the letters waw and fa between square brackets instead of the full stop. Full solution: can be found at the bottom of this page."
+```
+
+
 The contrast between *akhbara* and *ḥaddatha* becomes much clearer here: al-Ṭabarī 
 clearly used the term akhbara very rarely in the citation of his own sources, 
 even though the term is used frequently in other positions in the transmission 
@@ -522,4 +540,58 @@ chains.
 These graphs can be used as starting-off points for deeper analysis of the citation
 patterns in al-Ṭabarī's History. 
 
+
+
+## Full exercise solutions: 
+
+### ḥaddathani/a as first word in a paragraph: 
+
+```
+library("stringr")
+
+# build  the regular expression that can be used to identify the instances where haddathana/i is the first word of a transmission chain: 
+ptrn_0 <- "^# [وف]?"  # start of line, followed by hashtag and space, and optionally one of the conjunctions wa- or fa-
+ptrn_1 <- "حدثن"  # haddathan
+ptrn_2 <- "[ياى]"  # alif, ya or alif maqsura
+ptrn <- paste(ptrn_0, ptrn_1, ptrn_2, sep="")  # concatenate all patterns into a single pattern
+
+haddathani_first_v <- str_detect(lines_v, ptrn)
+
+# plot the vector (we add some more arguments here to prettify the graph):
+plot(haddathani_first_v, 
+     type = "h",      # "h" stands for histogram
+     yaxt = "n",      # do not include tick marks for values on the Y axis
+     ylim = c(0, 1),  # set the maximum value of the Y axis to 1
+     xlim = c(0, length(lines_v)), # set the maximum value of the X axis to the number of tokens in the text
+     main = "Dispersion plot for haddathani/a in initial position",  # title for the plot
+     xlab = "Index positions",                   # label for the x axis
+     ylab = "",                                  # label for the y axis
+)
+```
+
+### akhbarani/a as first word in a paragraph: 
+
+
+```
+library("stringr")
+# write the pattern here: 
+ptrn_1 <- "^# [وف]?"  # start of line, followed by hashtag and space, and optionally one of the conjunctions wa- or fa-
+ptrn_2 <- "[أا]"  # alif or alif-with-hamza
+ptrn_3 <- "خبرن"  # khbaran
+ptrn_4 <- "[ياى]"  # i/a
+
+ptrn <- paste(ptrn_1, ptrn_2, ptrn_3, ptrn_4, sep="")  # concatenate all patterns into a single pattern
+
+akhbarani_first_v <- str_detect(lines_v, ptrn)
+
+plot(akhbarani_first_v, 
+     type = "h",      # "h" stands for histogram
+     yaxt = "n",      # do not include tick marks for values on the Y axis
+     ylim = c(0, 1),  # set the maximum value of the Y axis to 1
+     xlim = c(0, length(lines_v)), # set the maximum value of the X axis to the number of tokens in the text
+     main = "Dispersion plot for akhbarani/a in initial position",  # title for the plot
+     xlab = "Index positions",                   # label for the x axis
+     ylab = "",                                  # label for the y axis
+)
+```
 
