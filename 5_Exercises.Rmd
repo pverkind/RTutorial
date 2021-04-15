@@ -140,6 +140,7 @@ and `result_v`?
 Use this same technique to extract all mentions of the word "فارس" from the text. 
 
 ```{r}
+#
 
 ```
 
@@ -156,6 +157,7 @@ NB: do not use the vector that contains the text split into lines for this,
 but first collapse the lines into one character string!
 
 ```{r}
+#
 
 ```
 
@@ -173,6 +175,7 @@ and مدينة (city) are mentioned in each chunk.
 
 
 ```{r}
+#
 
 ```
 
@@ -183,5 +186,6 @@ file. When you found the solution, create dispersion plots for a word in 4 text 
 of your choice using a loop, and save each of those plots to a file.
 
 ```{r}
+#
 
 ```
