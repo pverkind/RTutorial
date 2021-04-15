@@ -648,7 +648,7 @@ for (i in 1:length(chapter_starts_v)) {
   # count the number of times the search pattern is mentioned in the chapter:
   ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   # fill in the pattern here: 
-  ptrn <- "^# .?حدثن"
+  ptrn <- 
   chapter_count <- sum(str_count(chapter_lines_v, ptrn))
   message("Chapter ", i, " contains the search pattern ", chapter_count, " times")
 
