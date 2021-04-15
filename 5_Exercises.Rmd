@@ -101,6 +101,7 @@ You can use the `nchar()` function to count the number of characters in a string
 
 
 ```{r}
+#
 
 ```
 
@@ -113,6 +114,7 @@ of strings shorter than 5 characters in a vector `short_v`, and the others in
 a vector called `long_v`. 
 
 ```{r}
+#
 
 ```
 
