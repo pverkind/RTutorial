@@ -1,0 +1,799 @@
+---
+title: "R Tutorial: Token Distribution Analysis"
+output: 
+  html_document:
+      self_contained: false
+      css: "style.css"
+---
+
+```{r setup, include=FALSE}
+tutorial::go_interactive()
+```
+
+## Introduction
+
+This tutorial is based on Jockers' *Text Analysis with R For Students of Literature*, 
+Chapter 5: "Token Distribution Analysis".
+
+This chapter introduces two very important concepts in programming: 
+
+* `for` loops
+* `if` conditionals
+
+## Cleaning the Workspace
+
+RStudio keeps track of all variables you have instantiated during a session
+(by running an R script, or running code in the RStudio console). 
+
+You can see these variables in the `Environment` tab. 
+These variables remain available in memory, even after you have closed
+an R script; when you have multiple R script open at the same time in 
+RStudio, variables you have declared in one script will be available
+for another script in the same session. 
+
+This may lead to considerable problems because of variable conflicts
+(variables with the same name declared in different scripts, for example). 
+
+It is a good idea to clean your workspace from time to time. 
+In the RStudio menu, go to `Session > Clear Workspace...` 
+and click OK. 
+
+NB: you can also do this from the RStudio console, by using this command: 
+
+```
+> rm(list = ls())
+```
+
+The `ls()` function (short for "list") lists all objects R has currently 
+loaded in memory and returns them as a character vector; 
+the `rm()` function (short for "remove") removes these items from memory.
+
+If you run the `ls()` command after removing all objects, 
+you should get the output `character(0)`, which is R's way of saying
+that `ls()` returned an empty character vector - no variables have been
+declared in the current session. 
+
+```
+> ls()
+character(0)
+> a <- 123
+> ls()
+[1] "a"
+```
+
+## Start up code
+
+We will start this session with loading all lines of text in al-Ṭabari's 
+History into memory (without the metadata header) from the OpenITI website.
+We will also load the `stringr` package for dealing with regular expressions.
+
+```{r ex="setting_up", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+```
+
+```{r ex="setting_up", type="sample-code"}
+library("stringr")  # importing libraries is always done at the top of a script
+
+url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+splitter_index <- which(text_v == "#META#Header#End#")
+lines_v <- text_v[(splitter_index+1):length(text_v)]
+```
+
+NB: if you run this code in RStudio, and have not yet installed the
+`stringr` package on your computer, you will get an error message. 
+You will have to install `stringr` and then run the code again. 
+
+`stringr` is part of the [tidyverse](https://www.tidyverse.org/),
+a collection of R packages
+for data science that work together well because they share the same 
+philosophy, grammar and data structures. 
+
+To install all packages of the tidyverse, simply run: 
+
+```
+> install.packages("tidyverse")
+```
+
+This will install all packages in the tidyverse collection, including `stringr`.
+
+Remember, a package needs to be installed only once; but in every session you 
+want to use that package, you need to load it using the `library()` function. 
+
+
+## Algorithm building
+
+The practical task this chapter wants to accomplish is to build a graph
+that shows the frequency of a specific token in each chapter of our 
+example text. In the previous chapters, we already created a plot
+that allowed us to see the dispersion of a token across the whole text,
+this time we will add a level of complexity (and, hopefully, new 
+possibilities for finding relevant patterns) by taking chapter 
+boundaries into account. 
+
+In order to write a script that does this, we have to turn it into 
+an **algorithm**, that means, we have to break down our main task 
+into smaller steps that can be carried out by the computer. 
+
+A good way to start doing this, is by trying to think what steps
+the computer would need to do to reach our goal. 
+
+In our example, this could be a start: 
+
+* load the text
+* cut the text up into chapters
+* for every chapter, count the number of times our word is mentioned
+in that chapter
+* plot the counts in a graph
+
+This is a good start, but now we have to turn these steps into 
+instructions R will understand. 
+
+Let's look at each of these steps in some more detail: 
+
+* loading the text: we already know how to instruct R to do this: 
+
+  ```
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310 Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  ```
+* cut the text up into chapters: this is more difficult. We'll have to 
+break this step into smaller steps: 
+  - in order to cut the text into chapters, R needs to know where
+    a chapter starts and ends. In the previous chapters, 
+    we have already used a regular expression to find the index location
+    of the splitter that splits the metadata header off from the body 
+    of the text; we can probably do something similar to find the 
+    index location of the start of each chapter. The end of each chapter
+    should be the line before the start of the next chapter
+    (except for the last chapter, where it will be the end of the book),
+    so that should also not be too difficult to do. We'll discuss
+    how we are going to do this in detail below.
+  - we have already learned how we can use numeric indexing to 
+    extract slices from a vector; we will be able to use the start
+    and end index of each chapter to define the start and end point
+    of our slices: `chapter_lines_v <- text_lines_v[chapter_start:chapter_end]`
+* for every chapter, count the number of times our word is mentioned
+in that chapter: 
+  - the computer will need to follow the same instructions for each 
+    chapter. Since programmers are lazy (and time is valuable), we 
+    will not write the same code for every chapter, but tell the 
+    computer to execute the same code for every chapter. 
+    This is called a **loop** in programming: you tell the computer
+    to run the same code for a defined number of times (or until 
+    a specific desired endpoint is reached). 
+    
+    This is an example of a loop that prints a little conversation
+    about three types of fruit:
+    
+```{r ex="loop1", type="sample-code"}
+fruit_v <- c("apples", "pears", "bananas")
+for (i in (1:length(fruit_v))) {
+  message("Do you like ", fruit_v[i], "?")
+  message("I love ", fruit_v[i], "!")
+}
+```
+    
+  - There are a couple of different types of loops in R; the one in 
+    the example is called a **for loop**, because it starts with 
+    the operator `for`. We will discuss for loops below in detail; 
+    for now it suffices to know that a for loop will run the code 
+    between the curly brackets a fixed amount of times. In the 
+    example, it ran as many times as the `fruit_v` vector contains
+    elements; for our purposes, we will run it as many times
+    as we found chapter headings in our text. 
+  
+  - in order to be able to compare the frequency for our word in each
+    chapter, even if some chapters are really long, and others very 
+    short, it would make sense to use relative frequencies instead of 
+    absolute frequencies. 
+
+> NB: the **`message()`** function is a useful function for printing information
+  to the console. It can help understand what your script is doing exactly,
+  especially when your script is not producing the output you expect. 
+  The function takes any number of character vectors (or other objects that
+  can be converted implicitly to character vectors), concatenates them 
+  without any separator, and prints them to the console. 
+  
+> A similar function is `cat()`, which does the same but adds a user-defined separator
+  (`sep`, default is " " (space)) between each element. The downside of `cat()`
+  is that you have to add a new-line character as the last element in the 
+  list of arguments, otherwise the next output will appear on the same line. 
+  
+  ```
+  > a <- c(1, 23, 4)
+  > cat("a:", a)
+  a: 1 23 4
+  > cat("a:", a, sep = "-")
+  a:-1-23-4
+  ```
+
+## Identifying chapter breaks with `grep`
+
+`grep` is one of the most commonly used functions in R for text analysis,
+because it leverages the power of regular expressions. 
+
+`grep` is used to identify which items in a vector match a (regular expression)
+pattern. For example, try running this code:  
+
+```{r}
+test_v <- c("Introduction", "CHAPTER 1. Loomings", "Blabla blabla", "CHAPTER 2. The Carpet-Bag.")
+grep("^CHAPTER \\d+", test)
+```
+
+We created a character vector with four elements and assigned it to
+variable `test_v`; and we then used `grep` to identify which of the items
+in `test_v` matched a pattern (the upper-case word CHAPTER at the beginning
+of a string, followed by a space and at least one number). 
+`grep` returned a vector containing two numbers, indicating that it found
+two matches of the pattern in the `test_v` vector: items number two and 4.
+
+We will now use `grep` to identify the beginning of each chapter in 
+Ṭabari's History. The text we loaded into memory is from the OpenITI
+corpus. OpenITI texts contain structural tagging in OpenITI mARkdown 
+format: first-level headings ("chapters") are introduced with the tag
+`### | `, second-level headings with `### ||`, and so on. 
+
+Let's use `grep` to find the locations of all section headings in our text:
+
+```{r ex="grep1", type="pre-exercise-code"}
+library("stringr")  # importing libraries is always done at the top of a script
+
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+splitter_index <- which(text_v == "#META#Header#End#")
+lines_v <- text_v[(splitter_index+1):length(text_v)]
+```
+
+```{r ex="grep1", type="sample-code"}
+chapter_starts_v <- grep("### \\|\\| ", lines_v)
+head(chapter_starts_v)
+head(lines_v[chapter_starts_v], 25)
+```
+
+
+
+## A remark on `grep` with non-Latin characters on Windows
+
+Unfortunately, `grep` does not deal particularly well with Arabic script
+(and other non-ASCII characters) on Windows (no problem on Mac and Linux,
+provided the locale is set to a UTF-8 locale). 
+
+For example, if we try the same code with an equivalent in Arabic: 
+
+```
+> test_v <- c("المقدمة", "باب ١", "بلا بلا", "باب ٢")
+> grep("^باب \\d+", test_v)
+integer(0)
+```
+
+`grep` returned `integer(0)`, which means, an empty numeric vector: 
+`grep` did not find a match. 
+
+We can see why by slightly changing the `test_v` vector (replacing
+the hindi-Arabic numbers by ASCII Arabic numbers): 
+
+```
+> test_v <- c("المقدمة", "باب 1", "بلا بلا", "باب 2")
+> grep("^باب \\d+", test_v)
+[1] 2 4
+```
+
+Clearly, what is going on, is that the special regex character `\\d` in
+`grep` does not cover hindi-Arabic numerals, only ASCII numerals. 
+
+The same goes for another important regex character, `\\w`, which 
+supposedly covers any letter or numeric character: 
+
+```
+> test_v <- c("test", "عربي", "فارسی")
+> grep("\\w+", test_v)
+[1] 1
+```
+
+What is happening is that `grep` uses the language settings ("locale") 
+of your operating system, and only matches those characters that
+are defined there as word characters. 
+
+On Mac and Linux, 
+you can use the command `Sys.setlocale("LC_ALL", "C.UTF-8")` to set your locale 
+encoding to `UTF-8`, a unicode implementation, which will solve this problem; 
+but on Windows, this is currently not possible. 
+
+For this reason, it is better to use the regular expression functions
+from the `stringr` package, because those cover all unicode characters
+by default. 
+
+
+## for loops
+
+A "for loop" is used in programming to repeat the same code a fixed number of times.
+For loops are often used to "iterate over", or "loop through", all items in a 
+vector and repeat the same code for each item. 
+
+In our example, we will iterate over the start index of each chapter in our book,
+which we stored in the variable `chapter_starts_v`. 
+
+One popular way to do this is by looping through the index positions of each item in the vector, starting from the first (item number 1) to the last item (`length(chapter_starts_v)`). Inside the loop's code block (that is, the code between the curly braces that will be repeated for each item in the vector), you can then access each item's value by numeric indexing (`chapter_starts_v[i]`):
+
+```{r ex="forLoop1", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+
+if (! (exists("chapter_starts_v"))) {
+  chapter_starts_v <- grep("### \\|\\| ", lines_v)
+}
+```
+
+```{r ex="forLoop1", type="sample-code"}
+for (i in 1:length(chapter_starts_v)) {
+  chapter_start <- chapter_starts_v[i]
+  message("chapter ", i, " starts at index number ", chapter_start)
+}
+```
+
+Note the indentation in the code above: in R, code inside a code block is indented 
+by two spaces, for readability: this makes it easier to see which part of the code 
+is part of the code block and will thus be repeated in every step of the loop.
+
+The first line of the for loop creates a variable `i`, whose value will change in
+every step ("iteration") of the for loop. The first time, `i` will have the 
+value 1, the second time 2, and so on until it reaches the last number in the 
+sequence `1:length(chapter_starts_v)`. 
+
+The loop as written above is thus a short way of writing:
+
+```
+i <- 1
+chapter_start <- chapter_starts_v[i]
+message("chapter ", i, " starts at index number ", chapter_start)
+i <- 2
+chapter_start <- chapter_starts_v[i]
+message("chapter ", i, " starts at index number ", chapter_start)
+i <- 3
+chapter_start <- chapter_starts_v[i]
+message("chapter ", i, " starts at index number ", chapter_start)
+...
+i <- length(chapter_starts_v)
+chapter_start <- chapter_starts_v[i]
+message("chapter ", i, " starts at index number ", chapter_start)
+```
+
+One of the advantages of looping through a vector in this way is that it becomes 
+possible to access in every step of the looping process not only the current item's 
+value (`chapter_starts_v[i]`) but also the next item's value (`chapter_starts_v[i+1]`). 
+
+We will use this in our 
+code to define the index number of the end of each chapter. Since our text 
+vector `lines_v` contains lines of text, the end of each chapter can be defined 
+as the line before the start of the next chapter:
+
+```{r ex="forLoop2", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+
+if (! (exists("chapter_starts_v"))) {
+  chapter_starts_v <- grep("### \\|\\| ", lines_v)
+}
+```
+
+```{r ex="forLoop2", type="sample-code"}
+for (i in 1:length(chapter_starts_v)) {
+  chapter_start <- chapter_starts_v[i]
+  next_chapter_start <- chapter_starts_v[i+1]
+  chapter_end <- next_chapter_start - 1
+  message("Chapter ", i, " starts at line ", chapter_start, " and ends at line ", chapter_end)
+}
+```
+
+If you run this code, it will print a message about the start and end of each 
+chapter. For the last chapter, however, it will produce an error: instead of a
+number, the output says that the chapter "ends at index NA". `NA` is a special
+value in R that means "Not Available"; that is because we defined the 
+`chapter_end` as the last line before the next chapter, and for the last chapter, 
+the book does not have a next chapter.
+
+To deal with such cases, additional **conditions** are often added to for loops. 
+In our case, we would like to use the code we wrote above to define the end 
+index of each chapter except the last chapter. 
+
+We can write that condition like this:
+
+```{r ex="forLoop3", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+
+if (! (exists("chapter_starts_v"))) {
+  chapter_starts_v <- grep("### \\|\\| ", lines_v)
+}
+```
+
+```{r ex="forLoop3", type="sample-code"}
+for (i in 1:length(chapter_starts_v)) {
+  chapter_start <- chapter_starts_v[i]
+  if (i < length(chapter_starts_v)) {
+    chapter_end <- chapter_starts_v[i+1] - 1
+    message("Chapter ", i, " starts at line ", chapter_start, " and ends at line ", chapter_end)
+  }
+}
+```
+
+Conditions start with the operator `if`; the condition itself is written between
+brackets, and the code that needs to be executed if the condition is met, 
+is written in a code block, between braces. 
+
+> Note that the condition has the same syntax as the for loop itself: 
+  `<operator> <bracketed expression> <indented code block between braces>`. Note 
+  also that the `if` code block is indented by 4 spaces, 2 more than the 
+  `for` code block it belongs to, again for readability. 
+
+If you run the code above, you will see that its output is almost identical
+to the code we wrote before. The only difference is that it did not print the 
+start and end index info for the last chapter, because the last chapter did 
+fulfill the condition of the `if` statement. 
+
+For cases that do not fulfill the condition of the `if` statement, we can 
+define alternative code to be run in another code block, that is preceded by
+the `else` operator. For the last chapter, we would like to use the end of the
+book as the end of the chapter: 
+
+```{r ex="forLoop4", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+
+if (! (exists("chapter_starts_v"))) {
+  chapter_starts_v <- grep("### \\|\\| ", lines_v)
+}
+```
+
+```{r ex="forLoop4", type="sample-code"}
+for (i in 1:length(chapter_starts_v)) {
+  chapter_start <- chapter_starts_v[i]
+  if (i < length(chapter_starts_v)) {
+    chapter_end <- chapter_starts_v[i+1] - 1
+    message("Chapter ", i, " starts at line ", chapter_start, " and ends at line ", chapter_end)
+  }
+  else {
+    chapter_end <- length(lines_v)
+    message("Chapter ", i, " starts at line ", chapter_start, " and ends at line ", chapter_end)
+  }
+}
+```
+
+If you run this code, you will see that it correctly prints the start and end
+indexes of each chapter, including the last chapter. 
+
+Using numeric indexing, we can now use the indexes stored in the `chapter_start`
+and `chapter_end` variables to extract the lines of 
+each chapter from the `lines_v` (the latter contains all lines of the text):
+
+```{r ex="forLoop5", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+
+if (! (exists("chapter_starts_v"))) {
+  chapter_starts_v <- grep("### \\|\\| ", lines_v)
+}
+```
+
+```{r ex="forLoop5", type="sample-code"}
+for (i in 1:length(chapter_starts_v)) {
+  chapter_start <- chapter_starts_v[i]
+  if (i < length(chapter_starts_v)) {
+    chapter_end <- chapter_starts_v[i+1] - 1
+  }
+  else {
+    chapter_end <- length(lines_v)
+  }
+  message("Chapter ", i, " starts at line ", chapter_start, " and ends at line ", chapter_end)
+  chapter_lines_v <- lines_v[chapter_start:chapter_end]
+  message(head(chapter_lines_v, 10))
+}
+```
+
+Finally, we can count the number of times our token is mentioned in the chapter
+text. We can use the `str_count` function from the `stringr` package to do this; 
+`str_count(vector, pattern)` counts for every item in a vector how often the 
+search pattern is found in it. 
+
+For example, run this code to count the vowels in each item in the `test_v` vector: 
+
+```{r}
+library("stringr")
+test_v <- c("test", "vector", "dsn't cntn vwls")
+str_count(test_v, "[aeiou]")
+```
+
+In order to count all vowels in all items in the `test_v` vector combined, we need
+to sum the results of `str_count`: 
+
+```{r}
+library("stringr")
+test_v <- c("test", "vector", "dsn't cntn vwls")
+sum(str_count(test_v, "[aeiou]"))
+```
+
+Let's use this function to count the number of times the transmissive term 
+ḥaddathanī/ā is mentioned in the chapter: 
+
+```{r ex="forLoop6", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+
+if (! (exists("chapter_starts_v"))) {
+  chapter_starts_v <- grep("### \\|\\| ", lines_v)
+}
+```
+
+```{r ex="forLoop6", type="sample-code"}
+for (i in 1:length(chapter_starts_v)) {
+  # define the start and end index of every chapter:
+  chapter_start <- chapter_starts_v[i]
+  if (i < length(chapter_starts_v)) {
+    chapter_end <- chapter_starts_v[i+1] - 1
+  }
+  else {
+    chapter_end <- length(lines_v)
+  }
+ message("chapter ", i, " starts at index ", chapter_start, " and ends at index ", chapter_end)
+  
+  # extract the chapter text from the whole text: 
+  chapter_lines_v <- lines_v[chapter_start:chapter_end]
+  
+  # count the number of times the search pattern is mentioned in the chapter:
+  ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # fill in the pattern here: 
+  ptrn <- 
+  chapter_count <- sum(str_count(chapter_lines_v, ptrn))
+  message("Chapter ", i, " contains the search pattern ", chapter_count, " times")
+
+}
+```
+
+Since the text contains long and short chapters, it makes sense to use a
+relative count rather than the absolute count. We could, for example,
+check what percentage of the lines in each chapter contain the search term: 
+
+```{r ex="forLoop7", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+
+if (! (exists("chapter_starts_v"))) {
+  chapter_starts_v <- grep("### \\|\\| ", lines_v)
+}
+```
+
+```{r ex="forLoop7", type="sample-code"}
+for (i in 1:length(chapter_starts_v)) {
+  # define the start and end index of every chapter:
+  chapter_start <- chapter_starts_v[i]
+  if (i < length(chapter_starts_v)) {
+    chapter_end <- chapter_starts_v[i+1] - 1
+  }
+  else {
+    chapter_end <- length(lines_v)
+  }
+ message("chapter ", i, " starts at index ", chapter_start, " and ends at index ", chapter_end)
+  
+  # extract the chapter text from the whole text: 
+  chapter_lines_v <- lines_v[chapter_start:chapter_end]
+  
+  # count the number of times the search pattern is mentioned in the chapter:
+  ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # fill in the pattern here: 
+  ptrn <- "^# .?حدثن"
+  chapter_count <- sum(str_count(chapter_lines_v, ptrn))
+  message("Chapter ", i, " contains the search pattern ", chapter_count, " times")
+
+  # convert this absolute count into a relative count: 
+  relative_chapter_count <- 100 * chapter_count / length(chapter_lines_v)
+  message(relative_chapter_count, "% of lines in Chapter ", i, " contain the search pattern ")
+
+}
+```
+
+Time to celebrate! We managed to print the data we wanted to extract from each
+chapter!
+
+But wait, we also wanted to plot this data in a graph. How can we do that? 
+The `relative_chapter_count` variable is created anew in every step of the loop;
+at the end of the loop, it contains only the count for the last chapter. 
+
+The solution is to create, before we start the loop, a vector into which we will 
+store the counts for every chapter: 
+
+```{r ex="forLoop8", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+
+if (! (exists("chapter_starts_v"))) {
+  chapter_starts_v <- grep("### \\|\\| ", lines_v)
+}
+```
+
+```{r ex="forLoop8", type="sample-code"}
+# initialize an empty vector that will hold the counts for every chapter: 
+relative_chapter_counts <- c()
+
+for (i in 1:length(chapter_starts_v)) {
+  # define the start and end index of every chapter:
+  chapter_start <- chapter_starts_v[i]
+  if (i < length(chapter_starts_v)) {
+    chapter_end <- chapter_starts_v[i+1] - 1
+  }
+  else {
+    chapter_end <- length(lines_v)
+  }
+ message("chapter ", i, " starts at index ", chapter_start, " and ends at index ", chapter_end)
+  
+  # extract the chapter text from the whole text: 
+  chapter_lines_v <- lines_v[chapter_start:chapter_end]
+  
+  # count the number of times the search pattern is mentioned in the chapter:
+  ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # fill in the pattern here: 
+  ptrn <- "^# .?حدثن"
+  chapter_count <- sum(str_count(chapter_lines_v, ptrn))
+  message("Chapter ", i, " contains the search pattern ", chapter_count, " times")
+
+  # convert this absolute count into a relative count: 
+  relative_chapter_count <- 100 * chapter_count / length(chapter_lines_v)
+  message(relative_chapter_count, "% of lines in Chapter ", i, " contain the search pattern ")
+  
+  # add the current count to the vector containing all counts: 
+  relative_chapter_counts[i] <- relative_chapter_count
+  message(relative_chapter_counts)
+  
+}
+
+plot(relative_chapter_counts, type = "h")
+```
+
+## Exercise
+
+OpenITI texts contain so-called "milestones" after each sequence of 300 Arabic tokens. 
+They consist of the characters "ms" followed by a number.
+Try to create a graph like the one we created for the chapter for each milestone. 
+Since the sections are all 300 tokens long, we don't need relative counts
+but we can use the absolute counts
+
+
+```{r ex="forLoop-ex1", type="pre-exercise-code"}
+if(! ("stringr" %in% (.packages()))) library("stringr")
+
+if (! (exists("lines_v"))) {
+  # make sure Arabic is displayed correctly: 
+  Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+
+  url <- "https://raw.githubusercontent.com/OpenITI/0325AH/master/data/0310Tabari/0310Tabari.Tarikh/0310Tabari.Tarikh.Shamela0009783BK1-ara1.completed"
+  text_v <- scan(url, what="character", sep="\n", encoding="UTF-8")
+  splitter_index <- which(text_v == "#META#Header#End#")
+  lines_v <- text_v[(splitter_index+1):length(text_v)]
+}
+```
+
+```{r ex="forLoop-ex1", type="sample-code"}
+chapter_starts_v <- grep("ms\\d+", lines_v)
+
+# initialize an empty vector that will hold the counts for every chapter: 
+chapter_counts <- c()
+
+for (i in 1:length(chapter_starts_v)) {
+  # define the start and end index of every chapter:
+  chapter_start <- chapter_starts_v[i]
+  if (i < length(chapter_starts_v)) {
+    chapter_end <- chapter_starts_v[i+1] - 1
+  }
+  else {
+    chapter_end <- length(lines_v)
+  }
+ message("chapter ", i, " starts at index ", chapter_start, " and ends at index ", chapter_end)
+  
+  # extract the chapter text from the whole text: 
+  chapter_lines_v <- lines_v[chapter_start:chapter_end]
+  
+  # count the number of times the search pattern is mentioned in the chapter:
+  ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # fill in the pattern here: 
+  ptrn <- "^# .?حدثن"
+  chapter_count <- sum(str_count(chapter_lines_v, ptrn))
+  message("Chapter ", i, " contains the search pattern ", chapter_count, " times")
+
+  # convert this absolute count into a relative count: 
+  relative_chapter_count <- 100 * chapter_count / length(chapter_lines_v)
+  message(relative_chapter_count, "% of lines in Chapter ", i, " contain the search pattern ")
+  
+  # add the current count to the vector containing all counts: 
+  chapter_counts[i] <- chapter_count
+}
+
+plot(chapter_counts, type = "h")
+```
+
+
+
+
+
+```{r}
+    for (i in (1:5)) {
+        print(paste(i, "and 1 equal", (i + 1), sep = " "))
+        print(paste(i, "and 3 equal", (i + 3), sep = " "))
+        print(paste(i, "and 5 equal", (i + 5), sep = " "))
+    }
+    ```

@@ -1,0 +1,30 @@
+---
+title: "Arabic characters problem"
+output: 
+  html_document:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+tutorial::go_interactive()
+```
+
+If a code section contains any Arabic letter, the creation of the code editor will fail:
+
+```{r}
+a <- "ألف"
+```
+
+Same example, without the Arabic letters, works:
+
+```{r}
+a <- "alif"
+Encoding(a)
+```
+
+No problem with other non-ASCII characters:
+
+```{r}
+a <- "àlíf~"
+Encoding(a)
+```

@@ -2,7 +2,8 @@
 title: "R Tutorial: Token Distribution and Regular Expressions"
 output: 
   html_document:
-    self_contained: false
+      self_contained: false
+      css: "style.css"
 ---
 
 ```{r setup, include=FALSE}

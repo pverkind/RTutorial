@@ -2,7 +2,8 @@
 title: "R Tutorial: Word Frequency (continued)"
 output: 
   html_document:
-    self_contained: false
+      self_contained: false
+      css: "style.css"
 ---
 
 ```{r setup, include=FALSE}

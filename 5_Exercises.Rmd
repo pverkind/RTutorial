@@ -1,0 +1,187 @@
+---
+title: " Exercises on regular expressions, loops and if statements in R"
+output: 
+  html_document:
+      self_contained: false
+      css: "style.css"
+---
+
+```{r setup, include=FALSE}
+tutorial::go_interactive()
+```
+
+## Introduction
+
+These exercise will help you practise and develop your newly-acquired skills in 
+in R. 
+
+Create a new R script file you name `Chapter4-5_exercise_<yourname>.R` 
+And write down the code for your solutions to these exercises. 
+
+Use comments to separate the different exercises in your script. 
+
+## 1. regular expressions : basic exercises
+
+NB: Useful links:
+
+* [Rexegg regular expressions cheat sheet](https://www.rexegg.com/regex-quickstart.html#chars)
+* [virtual keyboard](https://pverkind.github.io/arabicVirtualKeyboard/) for 
+writing regular expressions containing Arabic script easier (make sure to toggle "RTL regex mode")
+
+### a. Load a new text from OpenITI
+
+Use the [Kitab metadata app](https://kitab-corpus-metadata.azurewebsites.net/) 
+to find the best digital text of al-Istakhri's geographical work al-Masalik 
+wa-al-Mamalik, and load the text in R. 
+
+NB: 
+
+* for how to use the Kitab metadata app, see [here](https://openiti.github.io/2021IslamicateWorldCourse/week-6-interacting-with-the-openiti-corpus-using-github-and-kate.html#finding-texts-in-the-openiti-corpus).
+* To get the link to a text, right-click the Version Id in the right-most column
+and choose `copy link address`.
+
+```{r ex="setting_up", type="pre-exercise-code"}
+# make sure Arabic is displayed correctly: 
+Sys.setlocale(category = "LC_ALL", locale = "C.UTF-8")
+```
+
+```{r ex="setting_up", type="sample-code"}
+# Load the text using its URL and remove the metadata header: 
+
+```
+
+```{r ex="setting_up", type="solution"}
+library("readr")
+# Load the text using its URL and remove the metadata header: 
+url <- "https://raw.githubusercontent.com/OpenITI/0350AH/master/data/0346Istakhri/0346Istakhri.MasalikWaMamalik/0346Istakhri.MasalikWaMamalik.Shamela0011680-ara1.mARkdown"
+text_lines_v <- read_lines(url)
+splitter_pos <- which(text_lines_v == "#META#Header#End#")
+body_lines_v <- text_lines_v[(splitter_pos + 1):length(text_lines_v)]
+```
+
+
+### b. regular expressions exercise 1
+
+Use a regular expression to find all the lines in the text that contain the word
+"درهم" (dirham, "silver coin") or its plural "دراهم" (darāhim)
+
+How many times is the word used? 
+
+Visualize with a dispersion plot where in the text it is used. 
+
+
+### c. regular expressions exercise 2
+
+Use a regular expression to find all the lines in the text that contain the word
+"إلى", "to(wards)" (note that the last letter of ilā changes into a yā' ("ي")
+if it is followed by a suffix; we want to include those cases as well)
+
+
+
+## Loops
+
+### basic loop exercise: 
+
+Create a vector that contains at least 4 numbers, and print for every 
+number in that vector its index position in the vector, and its value. 
+
+```{r}
+
+```
+
+
+### basic loop exercise 2:
+
+Create a vector `source_v` that contains at least 4 character strings. 
+Create a loop that prints the number of characters in each character string 
+and stores those counts in a new vector called `character_counts_v`.
+
+You can use the `nchar()` function to count the number of characters in a string. 
+(Ask shaykh Google or the R help function how to use `nchar()`)
+
+
+```{r}
+
+```
+
+
+### basic loop exercise 3: 
+
+Create a vector `source_v` that contains at least 4 character strings. 
+Use a "for loop" and an "if...else condition" to store the character counts
+of strings shorter than 5 characters in a vector `short_v`, and the others in
+a vector called `long_v`. 
+
+```{r}
+
+```
+
+## More advanced regular expressions exercise 3: use the `str_extract_all()` function to find words in context
+
+
+The `str_extract_all()` function creates a character vector that contains
+all matches for a search pattern in a given character vector. 
+
+```{r}
+library(stringr)
+ex <- c("I love apples", "I like pears", "I hate bananas")
+
+# find all words in the vector that contain the letter "e"
+result_l <- str_extract_all(ex, "\\w*e\\w*")
+str(result_l)
+# turn the list of results into a character vector:
+result_v <- unlist(result_l)
+str(result_v)
+```
+
+What does the output of the `str()` function tell you about the variables `result_l` 
+and `result_v`?
+
+Use this same technique to extract all mentions of the word "فارس" from the text. 
+
+```{r}
+
+```
+
+This is not very informative: you get only a sequence of repetitions of the word Fārs. 
+
+Would it not be great if we could print the context of the word as well? Say, 
+20 characters before and 20 characters after the search word? 
+
+Write a regular expression that will match the word Fārs + 20 characters before
+it and 20 characters after it. Then use a loop to print each of the search results
+in its context. 
+
+NB: do not use the vector that contains the text split into lines for this, 
+but first collapse the lines into one character string!
+
+```{r}
+
+```
+
+
+
+## More advanced loop exercise: 
+
+OpenITI texts contain milestone markers after every 300 Arabic tokens; they look like this: 
+`ms001` (after the first 300 Arabic tokens), `ms002` (after the second 300 Arabic tokens),
+etc.
+
+Use Jockers' method from chapter 5 to divide the text not into chapters but 
+into 300-word chunks, and plot how often the words "منبر" (pulpit, for mosque) 
+and مدينة (city) are mentioned in each chunk. 
+
+
+```{r}
+
+```
+
+### More looping: repeating the same code for multiple files: 
+
+Ask shaykh google how to save a plot created by the plot() function as an image 
+file. When you found the solution, create dispersion plots for a word in 4 text files 
+of your choice using a loop, and save each of those plots to a file.
+
+```{r}
+
+```

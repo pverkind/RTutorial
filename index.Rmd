@@ -23,5 +23,7 @@ and adapted for students working with texts in Arabic script.
 
 [Chapter 4: Regular expressions](./4_Regex.html)
 
+[Chapter 5: Token Distribution Analysis](./5_Token_Distribution_Analysis.html)
+
 
 

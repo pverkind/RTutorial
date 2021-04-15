@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Exercises on regular expressions, loops and if statements in R</title>
+
+<script src="5_Exercises_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="5_Exercises_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="5_Exercises_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="5_Exercises_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="5_Exercises_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="5_Exercises_files/navigation-1.1/tabsets.js"></script>
+<link href="5_Exercises_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="5_Exercises_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Exercises on regular expressions, loops and if statements in R</h1>
+
+</div>
+
+
+<script src="https://cdn.datacamp.com/datacamp-light-latest.min.js"></script>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>These exercise will help you practise and develop your newly-acquired skills in in R.</p>
+<p>Create a new R script file you name <code>Chapter4-5_exercise_&lt;yourname&gt;.R</code> And write down the code for your solutions to these exercises.</p>
+<p>Use comments to separate the different exercises in your script.</p>
+</div>
+<div id="regular-expressions-basic-exercises" class="section level2">
+<h2>1. regular expressions : basic exercises</h2>
+<p>NB: Useful links:</p>
+<ul>
+<li><a href="https://www.rexegg.com/regex-quickstart.html#chars">Rexegg regular expressions cheat sheet</a></li>
+<li><a href="https://pverkind.github.io/arabicVirtualKeyboard/">virtual keyboard</a> for writing regular expressions containing Arabic script easier (make sure to toggle “RTL regex mode”)</li>
+</ul>
+<div id="a.-load-a-new-text-from-openiti" class="section level3">
+<h3>a. Load a new text from OpenITI</h3>
+<p>Use the <a href="https://kitab-corpus-metadata.azurewebsites.net/">Kitab metadata app</a> to find the best digital text of al-Istakhri’s geographical work al-Masalik wa-al-Mamalik, and load the text in R.</p>
+<p>NB:</p>
+<ul>
+<li>for how to use the Kitab metadata app, see <a href="https://openiti.github.io/2021IslamicateWorldCourse/week-6-interacting-with-the-openiti-corpus-using-github-and-kate.html#finding-texts-in-the-openiti-corpus">here</a>.</li>
+<li>To get the link to a text, right-click the Version Id in the right-most column and choose <code>copy link address</code>.</li>
+</ul>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJwcmVfZXhlcmNpc2VfY29kZSI6IiMgbWFrZSBzdXJlIEFyYWJpYyBpcyBkaXNwbGF5ZWQgY29ycmVjdGx5OiBcblN5cy5zZXRsb2NhbGUoY2F0ZWdvcnkgPSBcIkxDX0FMTFwiLCBsb2NhbGUgPSBcIkMuVVRGLThcIikiLCJzYW1wbGUiOiIjIExvYWQgdGhlIHRleHQgdXNpbmcgaXRzIFVSTCBhbmQgcmVtb3ZlIHRoZSBtZXRhZGF0YSBoZWFkZXI6ICIsInNvbHV0aW9uIjoibGlicmFyeShcInJlYWRyXCIpXG4jIExvYWQgdGhlIHRleHQgdXNpbmcgaXRzIFVSTCBhbmQgcmVtb3ZlIHRoZSBtZXRhZGF0YSBoZWFkZXI6IFxudXJsIDwtIFwiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL09wZW5JVEkvMDM1MEFIL21hc3Rlci9kYXRhLzAzNDZJc3Rha2hyaS8wMzQ2SXN0YWtocmkuTWFzYWxpa1dhTWFtYWxpay8wMzQ2SXN0YWtocmkuTWFzYWxpa1dhTWFtYWxpay5TaGFtZWxhMDAxMTY4MC1hcmExLm1BUmtkb3duXCJcbnRleHRfbGluZXNfdiA8LSByZWFkX2xpbmVzKHVybClcbnNwbGl0dGVyX3BvcyA8LSB3aGljaCh0ZXh0X2xpbmVzX3YgPT0gXCIjTUVUQSNIZWFkZXIjRW5kI1wiKVxuYm9keV9saW5lc192IDwtIHRleHRfbGluZXNfdlsoc3BsaXR0ZXJfcG9zICsgMSk6bGVuZ3RoKHRleHRfbGluZXNfdildIn0=
+</div>
+</div>
+<div id="b.-regular-expressions-exercise-1" class="section level3">
+<h3>b. regular expressions exercise 1</h3>
+<p>Use a regular expression to find all the lines in the text that contain the word “درهم” (dirham, “silver coin”) or its plural “دراهم” (darāhim)</p>
+<p>How many times is the word used?</p>
+<p>Visualize with a dispersion plot where in the text it is used.</p>
+</div>
+<div id="c.-regular-expressions-exercise-2" class="section level3">
+<h3>c. regular expressions exercise 2</h3>
+<p>Use a regular expression to find all the lines in the text that contain the word “إلى”, “to(wards)” (note that the last letter of ilā changes into a yā’ (“ي”) if it is followed by a suffix; we want to include those cases as well)</p>
+</div>
+</div>
+<div id="loops" class="section level2">
+<h2>Loops</h2>
+<div id="basic-loop-exercise" class="section level3">
+<h3>basic loop exercise:</h3>
+<p>Create a vector that contains at least 4 numbers, and print for every number in that vector its index position in the vector, and its value.</p>
+</div>
+<div id="basic-loop-exercise-2" class="section level3">
+<h3>basic loop exercise 2:</h3>
+<p>Create a vector <code>source_v</code> that contains at least 4 character strings. Create a loop that prints the number of characters in each character string and stores those counts in a new vector called <code>character_counts_v</code>.</p>
+<p>You can use the <code>nchar()</code> function to count the number of characters in a string. (Ask shaykh Google or the R help function how to use <code>nchar()</code>)</p>
+</div>
+<div id="basic-loop-exercise-3" class="section level3">
+<h3>basic loop exercise 3:</h3>
+<p>Create a vector <code>source_v</code> that contains at least 4 character strings. Use a “for loop” and an “if…else condition” to store the character counts of strings shorter than 5 characters in a vector <code>short_v</code>, and the others in a vector called <code>long_v</code>.</p>
+</div>
+</div>
+<div id="more-advanced-regular-expressions-exercise-3-use-the-str_extract_all-function-to-find-words-in-context" class="section level2">
+<h2>More advanced regular expressions exercise 3: use the <code>str_extract_all()</code> function to find words in context</h2>
+<p>The <code>str_extract_all()</code> function creates a character vector that contains all matches for a search pattern in a given character vector.</p>
+<div data-datacamp-exercise="" data-height="300" data-encoded="true">
+eyJsYW5ndWFnZSI6InIiLCJzYW1wbGUiOiJsaWJyYXJ5KHN0cmluZ3IpXG5leCA8LSBjKFwiSSBsb3ZlIGFwcGxlc1wiLCBcIkkgbGlrZSBwZWFyc1wiLCBcIkkgaGF0ZSBiYW5hbmFzXCIpXG5cbiMgZmluZCBhbGwgd29yZHMgaW4gdGhlIHZlY3RvciB0aGF0IGNvbnRhaW4gdGhlIGxldHRlciBcImVcIlxucmVzdWx0X2wgPC0gc3RyX2V4dHJhY3RfYWxsKGV4LCBcIlxcXFx3KmVcXFxcdypcIilcbnN0cihyZXN1bHRfbClcbiMgdHVybiB0aGUgbGlzdCBvZiByZXN1bHRzIGludG8gYSBjaGFyYWN0ZXIgdmVjdG9yOlxucmVzdWx0X3YgPC0gdW5saXN0KHJlc3VsdF9sKVxuc3RyKHJlc3VsdF92KSJ9
+</div>
+<p>What does the output of the <code>str()</code> function tell you about the variables <code>result_l</code> and <code>result_v</code>?</p>
+<p>Use this same technique to extract all mentions of the word “فارس” from the text.</p>
+<p>This is not very informative: you get only a sequence of repetitions of the word Fārs.</p>
+<p>Would it not be great if we could print the context of the word as well? Say, 20 characters before and 20 characters after the search word?</p>
+<p>Write a regular expression that will match the word Fārs + 20 characters before it and 20 characters after it. Then use a loop to print each of the search results in its context.</p>
+<p>NB: do not use the vector that contains the text split into lines for this, but first collapse the lines into one character string!</p>
+</div>
+<div id="more-advanced-loop-exercise" class="section level2">
+<h2>More advanced loop exercise:</h2>
+<p>OpenITI texts contain milestone markers after every 300 Arabic tokens; they look like this: <code>ms001</code> (after the first 300 Arabic tokens), <code>ms002</code> (after the second 300 Arabic tokens), etc.</p>
+<p>Use Jockers’ method from chapter 5 to divide the text not into chapters but into 300-word chunks, and plot how often the words “منبر” (pulpit, for mosque) and مدينة (city) are mentioned in each chunk.</p>
+<div id="more-looping-repeating-the-same-code-for-multiple-files" class="section level3">
+<h3>More looping: repeating the same code for multiple files:</h3>
+<p>Ask shaykh google how to save a plot created by the plot() function as an image file. When you found the solution, create dispersion plots for a word in 4 text files of your choice using a loop, and save each of those plots to a file.</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
